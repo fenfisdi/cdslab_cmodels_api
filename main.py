@@ -1,22 +1,11 @@
-from dotenv import dotenv_values
-from fastapi import FastAPI
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+from cmodels_api.config import settings
 
-
-app = FastAPI()
-
-settings = dotenv_values(".env")
-
-app.add_middleware(
-    TrustedHostMiddleware,
-    allow_hosts=settings["ALLOWED_HOSTS"].split(",")
-    )
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=settings["ALLOW_CREDENTIALS"],
-    allow_origins=settings["ALLOWED_ORIGINS"].split(","),
-    allow_methods=settings["ALLOWED_METHODS"].split(","),
-    allow_headers=settings["ALLOWED_HEADERS"].split(",")
+if __name__ == '__main__':
+    uvicorn.run(
+        "cmodels_api.api:app",
+        host=settings['HOST'],
+        port=int(settings['PORT']),
+        reload=True,
+        debug=True,workers=1
     )
