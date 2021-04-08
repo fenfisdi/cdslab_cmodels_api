@@ -3,7 +3,8 @@
 __pycache__
 
 # Virtual environment - venv
-venv_cdslab_auth
+venv_cdslab_cmodels_api
+.venv
 
 # Virtual environment - pyenv
 .python-version
