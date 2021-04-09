@@ -7,5 +7,5 @@ if __name__ == '__main__':
         host=settings['HOST'],
         port=int(settings['PORT']),
         reload=True,
-        debug=True,workers=1
+        debug=True, workers=1
     )
