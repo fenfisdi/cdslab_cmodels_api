@@ -1,9 +1,9 @@
 import uvicorn
-from cmodels_api.config import settings
+from src.config import settings
 
 if __name__ == '__main__':
     uvicorn.run(
-        "cmodels_api.api:app",
+        "src.api:app",
         host=settings['HOST'],
         port=int(settings['PORT']),
         reload=True,
