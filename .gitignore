@@ -17,7 +17,7 @@ db_config.cfg
 send_email.cfg
 config.cfg
 qr.cfg
-
+.db_config
 
 # Secrets
 .secrets
