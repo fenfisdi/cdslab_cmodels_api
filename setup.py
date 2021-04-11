@@ -34,11 +34,11 @@ setup(
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries'
-        ],
+    ],
     test_suite='pytest',
     packages=find_packages(exclude='__pycache__'),
     keywords=[],
     python_requires='>=3.8',
     install_requires=[],
     zip_safe=False
-    )
+)
