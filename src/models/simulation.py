@@ -1,11 +1,8 @@
 from enum import Enum
 from datetime import datetime
-from typing import Optional
 
 from bson.objectid import ObjectId
-from pydantic import BaseModel, validator
-
-from src.config import settings
+from pydantic import BaseModel
 
 
 class SimulationType(str, Enum):
@@ -19,4 +16,3 @@ class SimulationConfig(BaseModel):
     name: str
     creation_date: datetime = datetime.now()
     simulation_type: SimulationType
-

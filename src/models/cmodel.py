@@ -1,10 +1,7 @@
 from enum import Enum
-from datetime import datetime
-from typing import Optional, Union
+from typing import Union
 
-from pydantic import BaseModel, validator
-
-from src.config import settings
+from pydantic import BaseModel
 
 
 class BaseCModel(Enum):

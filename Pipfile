@@ -6,11 +6,13 @@ name = "pypi"
 [packages]
 fastapi = "*"
 python-dotenv = "*"
+pymongo = "*"
+uvicorn = "*"
+bson = "*"
 
 [dev-packages]
 python-dotenv = {extras = ["cli"], version = "*"}
 pytest = "*"
-uvicorn = "*"
 flake8 = "*"
 
 [requires]

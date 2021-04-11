@@ -1,5 +1,3 @@
-from bson.objectid import ObjectId
-
 from src.db import get_db_connection
 
 
