@@ -15,5 +15,9 @@ python-dotenv = {extras = ["cli"], version = "*"}
 pytest = "*"
 flake8 = "*"
 
+[scripts]
+server = "python main.py"
+tests = "python -m pytest tests"
+
 [requires]
 python_version = "3.9"
