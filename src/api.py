@@ -11,7 +11,7 @@ app = FastAPI()
 app.add_middleware(
     TrustedHostMiddleware,
     allowed_hosts=settings["ALLOWED_HOSTS"].split(",")
-    )
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,4 +19,4 @@ app.add_middleware(
     allow_origins=settings["ALLOWED_ORIGINS"].split(","),
     allow_methods=settings["ALLOWED_METHODS"].split(","),
     allow_headers=settings["ALLOWED_HEADERS"].split(",")
-    )
+)

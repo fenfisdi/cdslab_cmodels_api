@@ -4,7 +4,9 @@ cmodels API repo
 
 ## Setup
 
-Make sure you have installed the required python version (see Pipfile)
+Make sure you have already installed the required python version (see Pipfile)
+
+### For ``pipenv`` users
 
 1. Clone this repository
 
@@ -33,12 +35,24 @@ Make sure you have installed the required python version (see Pipfile)
 
     NOTE: if you want to close the session just execute ``$ exit``
 
-5. Create your ``cdslab_cmodels_api/.env`` file with appropiate ``HOST`` and ``PORT`` variables defined.
+5. Create your ``~/cdslab_cmodels_api/.env`` file with appropiate ``HOST`` and ``PORT`` variables defined.
 
-6. Run the uvicorn server via the ``cdslab_cmodels_api/main.py`` file
+6. Run the uvicorn server via the ``~/cdslab_cmodels_api/main.py`` file
 
     ```bash
     $ python main.py
     ```
 
 7. Enjoy...
+
+### For non-pipenv users
+
+We will try to keep the ``requirements.txt`` file up to date. However, if you find out that some dependencies were not installed, we recommend updating this file via the following command:
+
+```bash
+$ pipenv lock --dev -r > requirements.txt
+```
+
+You can now configure the virtual environment using your preferred framework.
+
+**Note:**  before updating the ``requirements.txt`` file make sure you have already installed ``pipenv`` via ``$ pip install pipenv`` or by any other means.
