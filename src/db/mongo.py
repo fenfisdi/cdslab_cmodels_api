@@ -5,15 +5,19 @@ from src.config import db_config
 
 
 def get_db_connection() -> Database:
-    """
-        Create database connection to mongo engine
+    """Creates database connection to mongo engine
 
-        Return
-        ----------
-        MongoClient
-            Object containing the db connection
+    Yields
+    ------
+    db_connection: MongoClient
+        Object containing the db connection
     """
-    mongo_uri = db_config.get("MONGO_URI")
-    mongo_db = db_config.get("MONGO_DB")
+    db_connection = MongoClient(
+        db_config['MONGO_HOST'],
+        db_config['MONGO_PORT']
+    )
 
-    return MongoClient(mongo_uri).get_database(mongo_db)
+    try:
+        yield db_connection
+    finally:
+        db_connection.close()
