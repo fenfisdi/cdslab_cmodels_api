@@ -6,9 +6,8 @@ name = "pypi"
 [packages]
 fastapi = "*"
 python-dotenv = "*"
-pymongo = "*"
 uvicorn = "*"
-bson = "*"
+pymongo = "*"
 
 [dev-packages]
 python-dotenv = {extras = ["cli"], version = "*"}
