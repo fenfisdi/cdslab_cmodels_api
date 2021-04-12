@@ -22,6 +22,7 @@ class CompartmentalModel(Enum):
     ```
     """
     sir = {
+        '_id': 'SIR'.encode('utf-8').hex(),
         'name': 'SIR',
         'state_variables': ['S', 'I', 'R'],
         'state_variables_units': {
@@ -37,6 +38,7 @@ class CompartmentalModel(Enum):
     }
 
     seir = {
+        '_id': 'SEIR'.encode('utf-8').hex(),
         'name': 'SEIR',
         'state_variables': ['S', 'E', 'I', 'R'],
         'state_variables_units': {
@@ -53,6 +55,7 @@ class CompartmentalModel(Enum):
     }
 
     seirv = {
+        '_id': 'SEIRV'.encode('utf-8').hex(),
         'name': 'SEIRV',
         'state_variables': ['S', 'E', 'I', 'R', 'V'],
         'state_variables_units': {
