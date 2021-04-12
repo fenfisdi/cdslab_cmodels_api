@@ -1,10 +1,9 @@
 from pymongo import MongoClient
-from pymongo.database import Database
 
 from src.config import db_config
 
 
-def get_db_connection() -> Database:
+def get_db():
     """Creates database connection to mongo engine
 
     Yields
