@@ -11,10 +11,7 @@ def get_db():
     db_connection: MongoClient
         Object containing the db connection
     """
-    db_connection = MongoClient(
-        db_config['MONGO_HOST'],
-        db_config['MONGO_PORT']
-    )
+    db_connection = MongoClient(db_config['MONGO_URI'])
 
     try:
         yield db_connection
