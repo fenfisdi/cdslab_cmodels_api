@@ -1,2 +1,2 @@
 MONGO_URI = foo     # Setup your mongo server 
-MONGO_BD = foo.mongodb     # Setup your mongo database
+MONGO_DB = foo.mongodb     # Setup your mongo database
