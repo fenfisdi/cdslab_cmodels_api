@@ -13,6 +13,7 @@ pymongo = "*"
 python-dotenv = {extras = ["cli"], version = "*"}
 pytest = "*"
 flake8 = "*"
+requests = "*"
 
 [scripts]
 server = "python main.py"
