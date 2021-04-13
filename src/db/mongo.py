@@ -41,6 +41,6 @@ def get_db(
     db_connection : MongoClient
     db : pymongo.database.Database
     """
-    db_connection = MongoClient(db_config['MONGO_URI'])
-    db: Database = db_connection[db_config['MONGO_DB']]
+    db_connection = MongoClient(db_uri)
+    db: Database = db_connection[db_name]
     return db_connection, db
