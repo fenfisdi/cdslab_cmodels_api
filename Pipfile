@@ -6,13 +6,15 @@ name = "pypi"
 [packages]
 fastapi = "*"
 python-dotenv = "*"
+pymongo = "*"
+uvicorn = "*"
 
 [dev-packages]
 python-dotenv = {extras = ["cli"], version = "*"}
 pytest = "*"
-uvicorn = "*"
 flake8 = "*"
 requests = "*"
+mongomock = "*"
 
 [scripts]
 server = "python main.py"
