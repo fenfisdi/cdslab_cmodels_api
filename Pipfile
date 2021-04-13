@@ -12,6 +12,11 @@ python-dotenv = {extras = ["cli"], version = "*"}
 pytest = "*"
 uvicorn = "*"
 flake8 = "*"
+requests = "*"
+
+[scripts]
+server = "python main.py"
+tests = "python -m pytest tests"
 
 [requires]
 python_version = "3.9"
