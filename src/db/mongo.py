@@ -3,8 +3,8 @@ from pymongo import MongoClient
 from src.config import db_config
 
 
-def get_db():
-    """Creates database connection to mongo engine
+def api_get_db_connection():
+    """Creates connection to mongodb engine
 
     Yields
     ------
