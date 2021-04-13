@@ -148,3 +148,6 @@ cython_debug/
 .env
 .data/*
 .db_config
+
+# Experiments
+experiments/
