@@ -30,8 +30,6 @@ class MongoTestCase(TestCase):
             next(db_connection_generator)
         except StopIteration:
             pass
-        except Exception as e:
-            raise e
 
     @db_patch(servers=(('mongodb://mongodb.example.com', 27017),))
     @patch(solve_path('db_config'))
