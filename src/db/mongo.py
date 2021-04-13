@@ -43,4 +43,5 @@ def get_db(
     """
     db_connection = MongoClient(db_uri)
     db: Database = db_connection[db_name]
+
     return db_connection, db
