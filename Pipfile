@@ -16,6 +16,7 @@ flake8 = "*"
 requests = "*"
 mongomock = "*"
 pytest-cov = "*"
+hypothesis = "*"
 
 [scripts]
 server = "python main.py"
