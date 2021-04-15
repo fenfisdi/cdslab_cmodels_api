@@ -5,7 +5,7 @@ from src.models.cmodel import AllCModels
 
 
 if __name__ == '__main__':
-    CmodelInterface.created_cmodel_collection(AllCModels)
+    CmodelInterface.insert_cmodels_documents(AllCModels().models)
     uvicorn.run(
         "src.api:app",
         host=settings['HOST'],

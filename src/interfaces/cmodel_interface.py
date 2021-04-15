@@ -1,14 +1,17 @@
-from src.db.mongo import get_db_connection
+from src.db.mongo import get_db
+from src.config import db_config
 
 
-def model_db():
-    return get_db_connection()['cmodels']
+def cmodel_collection():
+    db_connection, db = get_db()
+    cmodels_coll = db[db_config['CMODELS_COLL']]
+    return db_connection, cmodels_coll
 
 
 class CmodelInterface:
 
     @staticmethod
-    def created_cmodel_collection(AllCModels):
+    def insert_cmodels_documents(models_list):
         """
             Check if the default compartmental models exists
             and if not, create them within the cmodels collection
@@ -22,6 +25,8 @@ class CmodelInterface:
             ----------
             model: pymongo object
         """
-        if model_db().find_one({'_id': {"$exists": True}}):
-            return print("models Already exist")
-        return [model_db().insert_one(model) for model in AllCModels().models]
+        db_connection, cmodels_coll = cmodel_collection()
+        with db_connection as client:
+            if cmodels_coll.find_one({'_id': {"$exists": True}}):
+                return "models already exists"
+            return [cmodels_coll.insert_one(model) for model in models_list][0]

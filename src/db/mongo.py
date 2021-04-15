@@ -1,18 +1,21 @@
+from typing import Generator, Tuple
 from pymongo import MongoClient
 from pymongo.database import Database
 
 from src.config import db_config
 
 
-def get_db():
-    """Creates database connection to mongo engine
+def api_get_db_connection(
+    db_uri: str = db_config['MONGO_URI'],
+) -> Generator[MongoClient, None, None]:
+    """Creates connection to Mongodb server.
 
     Yields
     ------
     db_connection: MongoClient
-        Object containing the db connection
+        Object containing the db connection.
     """
-    db_connection = MongoClient(db_config['MONGO_URI'])[db_config['MONGO_DB']]
+    db_connection = MongoClient(db_uri)
 
     try:
         yield db_connection
@@ -20,16 +23,25 @@ def get_db():
         db_connection.close()
 
 
-def get_db_connection() -> Database:
-    """
-        Create database connection to mongo engine
+def get_db(
+    db_uri: str = db_config['MONGO_URI'],
+    db_name: str = db_config['MONGO_DB']
+) -> Tuple[MongoClient, Database]:
+    """Gets Mongodb connection and database.
 
-        Return
-        ----------
-        MongoClient
-            Object containing the db connection
-    """
-    mongo_uri = db_config.get("MONGO_URI")
-    mongo_db = db_config.get("MONGO_DB")
+    Parameters
+    ----------
+    db_uri: str
+        Mongo server URI.
+    db_name: str
+        Mongo database name.
 
-    return MongoClient(mongo_uri).get_database(mongo_db)
+    Returns
+    -------
+    db_connection : MongoClient
+    db : pymongo.database.Database
+    """
+    db_connection = MongoClient(db_uri)
+    db: Database = db_connection[db_name]
+
+    return db_connection, db
