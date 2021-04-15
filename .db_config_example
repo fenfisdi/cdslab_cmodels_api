@@ -1,0 +1,2 @@
+MONGO_URI = 'mongodb://<HOST>:PORT'     # Setup your mongo server 
+MONGO_DB = foo.mongodb     # Setup your mongo database
