@@ -7,16 +7,18 @@ from pydantic import BaseModel
 class CompartmentalModelBase(BaseModel):
     """Base Model for Compartmental Models
     """
-    """Name of the compartmental model"""
     name: str
-    """Name of state variables of corresponding model"""
+    """Name of the compartmental model"""
     state_variables: List[str]
-    """Units of each state variable. The keys are the 'state_variables' array elements"""
+    """Name of state variables of corresponding model"""
     state_variables_units: Dict[str, str]
-    """Parameters of the corresponding model"""
+    """Units of each state variable. The keys are the 'state_variables' array
+    elements
+    """
     parameters: List[str]
-    """Units of each parameter. The keys are the 'parameters' array elements"""
+    """Parameters of the corresponding model"""
     parameters_units: Dict[str, str]
+    """Units of each parameter. The keys are the 'parameters' array elements"""
 
 
 class CompartmentalModel(Enum):
@@ -24,7 +26,7 @@ class CompartmentalModel(Enum):
 
     Each element of this ``Enum`` class contains all the essential information
     on the corresponding Compartmental Model. Each element is a
-    ``CompartmentalModelBase`` object
+    :class:``CompartmentalModelBase`` object
     """
     sir = CompartmentalModelBase(
         name='SIR',

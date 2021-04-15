@@ -16,6 +16,7 @@ class PydanticObjectId(BsonObjectId):
             raise TypeError('ObjectId required')
         return v
 
+
 class SimulationType(str, Enum):
     optimize = 'Optimize parameters'
     fixed = 'Fixed parameters'
