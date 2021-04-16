@@ -73,7 +73,6 @@ class CompartmentalModel(Enum):
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
-            'c': 'unit_test'
         },
     )
 
