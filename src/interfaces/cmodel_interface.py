@@ -32,12 +32,17 @@ class CmodelInterface:
             CmodelInterface.cmodels_coll.insert_one(model)
 
     def read_model(query):
-
+        """
+            Docstring
+        """
         with CmodelInterface.db_connection as client:
 
             return CmodelInterface.cmodels_coll.find_one(query)
 
     def update_model(colection_name, model):
+        """
+            Docstring
+        """
 
         with CmodelInterface.db_connection as client:
 

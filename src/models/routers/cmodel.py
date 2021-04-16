@@ -91,14 +91,3 @@ class CModelInDB(BaseModel):
 
     inserted_at: datetime
     updated_at: datetime
-
-
-model = CModelInDB(
-    _id=AllCModels().models[0].name, inserted_at=datetime.now(), updated_at=datetime.now()).dict()
-model = dict(
-    {'_id': AllCModels().models[0].name.encode('utf-8').hex()}, **model)
-"""
-model_in_db = AllCModels().models[0].dict().update(CModelInDB(
-    _id=AllCModels().models[0].name.encode('utf-8').hex(), inserted_at=datetime.now(), updated_at=datetime.now()).dict())
-"""
-#print(dict(model, **AllCModels().models[0].dict()))
