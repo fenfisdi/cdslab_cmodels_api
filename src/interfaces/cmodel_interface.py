@@ -39,11 +39,11 @@ class CmodelInterface:
 
             return CmodelInterface.cmodels_coll.find_one(query)
 
-    def update_model(colection_name, model):
+    def update_model(query, model):
         """
             Docstring
         """
 
         with CmodelInterface.db_connection as client:
 
-            CmodelInterface.cmodels_coll.update_one(colection_name, model)
+            CmodelInterface.cmodels_coll.update_one(query, {"$set": model})

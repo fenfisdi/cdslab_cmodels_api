@@ -23,7 +23,7 @@ def insert_cmodels_document():
             else:
                 model_in_db.pop('inserted_at')
                 CmodelInterface.update_model(
-                    {'name': model.name}, {"$set": model_in_db})
+                    {'name': model.name}, model_in_db)
                 print(f'{"model: "}{model.name}{" Updated"}')
         else:
             CmodelInterface.insert_cmodel(model_in_db)
