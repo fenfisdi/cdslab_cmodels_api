@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch, Mock
 
 import pymongo
-from mongomock import patch as db_path, ObjectId
+from mongomock import patch as db_path
 from pymongo.results import InsertOneResult
 
 from src.interfaces.cmodel_interface import CmodelInterface
@@ -26,23 +26,59 @@ class CmodelInterfaceTestCase(TestCase):
         self.client.close()
 
     @patch(solve_path('get_db'))
-    def test_insert_cmodel_documents_ok(self, mock_db: Mock):
+    def test_insert_cmodel_ok(self, mock_db: Mock):
         mock_db.return_value = self.client, self.test_mock
 
-        model = [{"_id": "example"}]
+        model = {"_id": "example"}
 
-        result = CmodelInterface.insert_cmodels_documents(model)
+        result = CmodelInterface.insert_cmodel(model)
 
         self.assertIsNotNone(result)
-        self.assertIsInstance(result[0], InsertOneResult)
-    """
-    @patch(solve_path('get_db'))
-    def test_insert_cmodel_documents_false(self, mock_db: Mock):
-        mock_db.return_value = self.client, self.test_mock
-        model = [{"_id": "example"}]
-        self.test_client.insert_one(model[0])
+        self.assertIsInstance(result, InsertOneResult)
 
-        result = CmodelInterface.insert_cmodels_documents(model)
+    @patch(solve_path('get_db'))
+    def test_read_cmodel_ok(self, mock_db: Mock):
+        mock_db.return_value = self.client, self.test_mock
+        query = {"_id": "example"}
+
+        result = CmodelInterface.read_model(query)
+
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, dict)
+
+    @patch(solve_path('get_db'))
+    def test_read_cmodel_not_found(self, mock_db: Mock):
+        mock_db.return_value = self.client, self.test_mock
+
+        result = CmodelInterface.read_model({"_id": 'test_model_example'})
+
+        self.assertIsNone(result)
+
+    @patch(solve_path('get_db'))
+    def test_update_cmodel_state_ok(self, mock_db: Mock):
+        mock_db.return_value = self.client, self.test_mock
+        query = {"_id": "example"}
+        data = {'params': ['a', 'b', 'c']}
+
+        result = CmodelInterface.update_model(query, data)
+
+        self.assertTrue(result)
+
+    @patch(solve_path('get_db'))
+    def test_update_cmodel_state_fail(self, mock_db: Mock):
+        mock_db.return_value = self.client, self.test_mock
+        query = {'_id': 'test_example'}
+        data = {'params': ['a', 'b', 'c']}
+
+        result = CmodelInterface.update_model(query, data)
 
         self.assertFalse(result)
-    """
+
+    @patch(solve_path('get_db'))
+    def test_delete_cmodel(self, mock_db: Mock):
+        mock_db.return_value = self.client, self.test_mock
+        query = {"_id": "example"}
+
+        result = CmodelInterface.delete_model(query)
+
+        self.assertTrue(result)
