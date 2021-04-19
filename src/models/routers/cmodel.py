@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Dict, List
-from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -73,6 +72,7 @@ class CompartmentalModel(Enum):
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
+            'c': 'units_test'
         },
     )
 
@@ -85,9 +85,3 @@ class AllCModels(BaseModel):
     models: List[CompartmentalModel] = [
         model.value for model in CompartmentalModel
     ]
-
-
-class CModelInDB(BaseModel):
-
-    inserted_at: datetime
-    updated_at: datetime
