@@ -6,7 +6,6 @@ from mongomock import patch as db_path
 from pymongo.results import InsertOneResult
 
 from src.interfaces.cmodel_interface import CmodelInterface
-from src.db.mongo import api_get_db_connection, get_db
 
 
 def solve_path(path: str):
