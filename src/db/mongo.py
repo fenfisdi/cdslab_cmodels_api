@@ -1,6 +1,8 @@
 from typing import Generator, Tuple
+
 from pymongo import MongoClient
 from pymongo.database import Database
+from pymongo.collection import Collection
 
 from src.config import db_config
 
@@ -45,3 +47,17 @@ def get_db(
     db: Database = db_connection[db_name]
 
     return db_connection, db
+
+
+def get_collection(
+    coll_name: str = db_config['CMODELS_COLL']
+) -> Tuple[MongoClient, Collection]:
+    """
+    Returns
+    -------
+    db_connection: pymongo.MongoClient
+    coll: pymongo.collection.Collection
+    """
+    db_connection, db = get_db()
+    coll: Collection = db[coll_name]
+    return db_connection, coll

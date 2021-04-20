@@ -9,7 +9,7 @@ from src.interfaces.cmodel_interface import CmodelInterface
 
 
 def solve_path(path: str):
-    source = 'src.interfaces.cmodel_interface'
+    source = 'src.db.mongo'
     return ".".join([source, path])
 
 

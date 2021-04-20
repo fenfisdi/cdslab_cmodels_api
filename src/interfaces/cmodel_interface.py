@@ -1,16 +1,9 @@
-from src.db.mongo import get_db
-from src.config import db_config
-
-
-def cmodel_collection():
-    db_connection, db = get_db()
-    cmodels_coll = db[db_config['CMODELS_COLL']]
-    return db_connection, cmodels_coll
+from src.db.mongo import get_collection
 
 
 class CmodelInterface:
 
-    db_connection, cmodels_coll = cmodel_collection()
+    db_connection, cmodels_coll = get_collection()
 
     @staticmethod
     def insert_cmodel(model):
