@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.interfaces.cmodel_interface import CmodelInterface
+from src.interfaces.crud import MongoCRUD
 from src.models.routers.cmodel import AllCModels
 from src.models.db.cmodels import CModelInDB
 from src.use_cases.cmodels import CmodelUseCases
@@ -13,7 +13,7 @@ def insert_cmodels_document():
                               **CModelInDB(inserted_at=datetime.now(),
                                            updated_at=datetime.now()).dict())
         model_in_db = dict(cmodel_db_base, **model.dict())
-        find_model = CmodelInterface.read_model({"name": model.name})
+        find_model = MongoCRUD.read_model({"name": model.name})
         if find_model:
             model_to_compare = CmodelUseCases.model_information_in_db_to_compare(
                 find_model)
@@ -21,8 +21,8 @@ def insert_cmodels_document():
                 print(f'{"model: "}{model.name}{" Already exist"}')
             else:
                 model_in_db.pop('inserted_at')
-                CmodelInterface.update_model(
+                MongoCRUD.update_model(
                     {'name': model.name}, model_in_db)
                 print(f'{"model: "}{model.name}{" Updated"}')
         else:
-            CmodelInterface.insert_cmodel(model_in_db)
+            MongoCRUD.insert_cmodel(model_in_db)
