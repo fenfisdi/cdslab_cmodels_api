@@ -15,8 +15,10 @@ def insert_cmodels_document():
     for model in CompartmentalModelEnum:
         model: CompartmentalModelBase = model.value
 
+        id_dict = {'_id': model.name.encode('utf-8').hex()}
+
         cmodel_document = CompartmentalModel(
-            id=model.name.encode('utf-8').hex(),
+            id=id_dict['_id'],
             inserted_at=datetime.now(),
             updated_at=datetime.now(),
             **model.dict()
@@ -24,7 +26,8 @@ def insert_cmodels_document():
 
         cmodels_crud = MongoCRUD(*get_collection())
 
-        existent_model = cmodels_crud.read({"name": model.name})
+        existent_model = cmodels_crud.read(id_dict)
+
         if existent_model:
             pruned_existent_model = \
                 CmodelUseCases.model_information_in_db_to_compare(
@@ -33,10 +36,16 @@ def insert_cmodels_document():
             if pruned_existent_model == model.dict():
                 # TODO: log cmodel exists
                 ...
+                print(f'Cmodel exists: {model.name}')
             else:
                 cmodel_document.pop('inserted_at')
-                cmodels_crud.update(cmodel_document)
+                cmodels_crud.update(
+                    id_dict,
+                    cmodel_document
+                )
                 # TODO log updated cmodel
+                print(f'Updated cmodel: {model.name}')
         else:
             cmodels_crud.insert(cmodel_document)
             # TODO: log created cmodel
+            print(f'Created cmodel: {model.name}')

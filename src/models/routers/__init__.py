@@ -5,10 +5,6 @@ from .simulation import (
 
 
 __all__ = [
-    'CompartmentalModelBase',
-    'CompartmentalModel',
-    'CModel',
-    'AllCModels',
     'SimulationType',
     'SimulationConfig',
 ]
