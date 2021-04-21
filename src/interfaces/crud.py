@@ -13,9 +13,8 @@ class MongoCRUD():
         self.db_connection = db_connection
         self.collection = collection
 
-    def insert_cmodel(self, data: dict):
-        """Check if the default compartmental models exists.
-
+    def insert(self, document: dict):
+        """
         Parameters
         ----------
         model
@@ -26,15 +25,15 @@ class MongoCRUD():
         model: pymongo object
         """
         with self.db_connection:
-            return self.collection.insert_one(data)
+            return self.collection.insert_one(document)
 
-    def read_model(self, query: dict) -> Union[Any, None]:
-        """Search for a specific model inside the database.
+    def read(self, query: dict) -> Union[Any, None]:
+        """Search for a specific model in ``self.collection``.
 
         Parameters
         ----------
-        query: dict
-            Key pair associated to the user
+        query
+            Document's id. ``dict`` schema: ``{'_id': bson.ObjectID}``
 
         Return
         ----------
@@ -44,13 +43,13 @@ class MongoCRUD():
         with self.db_connection:
             return self.collection.find_one(query)
 
-    def update_model(self, query: dict, new_data: dict) -> bool:
-        """Update model's status to active after verification
+    def update(self, query: dict, new_data: dict) -> bool:
+        """Update document in ``self.collection``.
 
         Parameters
         ----------
         query
-            Document's id. ``dict`` schema: {'_id': ``bson.ObjectID``}
+            Document's id. ``dict`` schema: ``{'_id': bson.ObjectID}``
         data
             Updated document fields
 
@@ -77,6 +76,6 @@ class MongoCRUD():
                     return True
             return False
 
-    def delete_model(self, query):
+    def delete(self, query):
         with self.db_connection:
             return self.collection.delete_one(query)

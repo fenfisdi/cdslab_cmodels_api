@@ -1,28 +1,42 @@
 from datetime import datetime
 
+from src.db.mongo import get_collection
+from src.models.db.cmodels import (
+    CompartmentalModelBase,
+    CompartmentalModelEnum
+)
+from src.models.db.cmodels import CompartmentalModel
 from src.interfaces.crud import MongoCRUD
-from src.models.routers.cmodel import AllCModels
-from src.models.db.cmodels import CModelInDB
 from src.use_cases.cmodels import CmodelUseCases
 
 
 def insert_cmodels_document():
 
-    for model in AllCModels().models:
-        cmodel_db_base = dict(CmodelUseCases.create_id_cmodel(model.name),
-                              **CModelInDB(inserted_at=datetime.now(),
-                                           updated_at=datetime.now()).dict())
-        model_in_db = dict(cmodel_db_base, **model.dict())
-        find_model = MongoCRUD.read_model({"name": model.name})
-        if find_model:
-            model_to_compare = CmodelUseCases.model_information_in_db_to_compare(
-                find_model)
-            if (dict(model_to_compare) == dict(model)):
-                print(f'{"model: "}{model.name}{" Already exist"}')
+    for model in CompartmentalModelEnum:
+        model: CompartmentalModelBase = model.value
+
+        cmodel_document = CompartmentalModel(
+            id=model.name.encode('utf-8').hex(),
+            inserted_at=datetime.now(),
+            updated_at=datetime.now(),
+            **model.dict()
+        ).dict(by_alias=True)
+
+        cmodels_crud = MongoCRUD(*get_collection())
+
+        existent_model = cmodels_crud.read({"name": model.name})
+        if existent_model:
+            pruned_existent_model = \
+                CmodelUseCases.model_information_in_db_to_compare(
+                    existent_model
+                )
+            if pruned_existent_model == model.dict():
+                # TODO: log cmodel exists
+                ...
             else:
-                model_in_db.pop('inserted_at')
-                MongoCRUD.update_model(
-                    {'name': model.name}, model_in_db)
-                print(f'{"model: "}{model.name}{" Updated"}')
+                cmodel_document.pop('inserted_at')
+                cmodels_crud.update(cmodel_document)
+                # TODO log updated cmodel
         else:
-            MongoCRUD.insert_cmodel(model_in_db)
+            cmodels_crud.insert(cmodel_document)
+            # TODO: log created cmodel
