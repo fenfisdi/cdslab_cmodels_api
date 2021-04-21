@@ -22,13 +22,17 @@ class CompartmentalModelBase(BaseModel):
     """Units of each parameter. The keys are the 'parameters' array elements"""
 
 
-class CompartmentalModel(CompartmentalModelBase):
+class MetadataBase(BaseModel):
     id: str = Field(..., alias='_id')
     inserted_at: datetime
     updated_at: datetime
 
     class Config:
         allow_population_by_field_name = True
+
+
+class CompartmentalModel(MetadataBase, CompartmentalModelBase):
+    pass
 
 
 class CompartmentalModelEnum(Enum):
@@ -83,9 +87,13 @@ class CompartmentalModelEnum(Enum):
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
-            'c': 'units_test'
+            'c': 'units of c'
         },
     )
+
+    @classmethod
+    def values(cls) -> List[CompartmentalModelBase]:
+        return [m.value for m in cls]
 
 
 class CModel(BaseModel):
