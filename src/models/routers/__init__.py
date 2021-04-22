@@ -1,9 +1,3 @@
-from .cmodel import (
-    CompartmentalModelBase,
-    CompartmentalModel,
-    CModel,
-    AllCModels
-)
 from .simulation import (
     SimulationType,
     SimulationConfig
@@ -11,10 +5,6 @@ from .simulation import (
 
 
 __all__ = [
-    'CompartmentalModelBase',
-    'CompartmentalModel',
-    'CModel',
-    'AllCModels',
     'SimulationType',
     'SimulationConfig',
 ]

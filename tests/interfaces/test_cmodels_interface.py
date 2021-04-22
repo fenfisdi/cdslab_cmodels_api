@@ -13,7 +13,7 @@ def solve_path(path: str):
     return ".".join([source, path])
 
 
-class CmodelInterfaceTestCase(TestCase):
+class MongoCRUDTestCase(TestCase):
     server = "mongodb://mongodb0.example.com:27017"
 
     @db_path(servers=(('server.example.com', 27017),))
@@ -30,7 +30,7 @@ class CmodelInterfaceTestCase(TestCase):
     def test_insert_cmodel_ok(self, mock: Mock):
         model = {"_id": "example"}
 
-        result = self.mongo_crud.insert_cmodel(model)
+        result = self.mongo_crud.insert(model)
 
         self.assertIsNotNone(result)
         self.assertIsInstance(result, InsertOneResult)
@@ -39,8 +39,8 @@ class CmodelInterfaceTestCase(TestCase):
     def test_read_cmodel_ok(self, mock: Mock):
         model = {"_id": "example"}
 
-        self.mongo_crud.insert_cmodel(model)
-        read_result = self.mongo_crud.read_model(model)
+        self.mongo_crud.insert(model)
+        read_result = self.mongo_crud.read(model)
 
         self.assertIsNotNone(read_result)
         self.assertIsInstance(read_result, dict)
@@ -48,17 +48,17 @@ class CmodelInterfaceTestCase(TestCase):
     @patch(solve_path('get_db'))
     def test_read_cmodel_not_found(self, mock: Mock):
         model = {"_id": "example"}
-        result = self.mongo_crud.read_model(model)
+        result = self.mongo_crud.read(model)
         self.assertIsNone(result)
 
     @patch(solve_path('get_db'))
     def test_update_cmodel_state_ok(self, mock: Mock):
         model = {"_id": "example"}
 
-        self.mongo_crud.insert_cmodel(model)
+        self.mongo_crud.insert(model)
         new_data = {'params': ['a', 'b', 'c']}
 
-        result = self.mongo_crud.update_model(model, new_data)
+        result = self.mongo_crud.update(model, new_data)
 
         self.assertTrue(result)
 
@@ -66,6 +66,6 @@ class CmodelInterfaceTestCase(TestCase):
     def test_update_cmodel_state_fail(self, mock: Mock):
         query = {'_id': 'test_example'}
 
-        result = self.mongo_crud.update_model(query, {})
+        result = self.mongo_crud.update(query, {})
 
         self.assertFalse(result)
