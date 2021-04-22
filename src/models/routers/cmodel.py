@@ -85,6 +85,3 @@ class AllCModels(BaseModel):
     models: List[CompartmentalModel] = [
         model.value for model in CompartmentalModel
     ]
-
-
-print(CompartmentalModel(value))
