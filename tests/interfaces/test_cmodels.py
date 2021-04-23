@@ -6,9 +6,7 @@ from mongomock import patch as db_path
 from pymongo.results import InsertOneResult
 
 from src.interfaces.cmodels import CModelsInterface
-from src.models.db.cmodels import (
-    CompartmentalModelEnum
-)
+from src.models.db.cmodels import CompartmentalModelEnum
 
 
 def solve_path(path: str):
