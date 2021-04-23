@@ -52,7 +52,7 @@ class CModelsInterface:
             # TODO: log created cmodel
             print(f'Created cmodel: {model.name}')
 
-    def insert_all_cmodel_documents(self, ):
+    def insert_all_cmodel_documents(self):
         for model in CompartmentalModelEnum.values():
             self.insert_one_cmodel_document(model)
 
