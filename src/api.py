@@ -4,7 +4,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from src.config import settings
 from src.routers.main import main_router
-from src.use_cases.cmodels import CmodelUseCases
+
 
 app = FastAPI()
 
@@ -26,5 +26,3 @@ app.include_router(
     main_router,
     tags=["Main"],
 )
-
-CmodelUseCases.update_cmodels_collection()
