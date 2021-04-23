@@ -25,8 +25,8 @@ class CModelsInterface:
 
         cmodel_document = CompartmentalModel(
             id=id_dict['_id'],
-            inserted_at=datetime.now(),
-            updated_at=datetime.now(),
+            inserted_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
             **model.dict()
         ).dict(by_alias=True)
 
