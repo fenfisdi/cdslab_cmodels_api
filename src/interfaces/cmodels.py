@@ -33,10 +33,9 @@ class CModelsInterface:
         existent_model = self.crud.read(id_dict)
 
         if existent_model:
-            pruned_existent_model = \
-                CModelsInterface._prune_db_document(
-                    existent_model
-                )
+            pruned_existent_model = CModelsInterface._prune_db_document(
+                existent_model
+            )
             if pruned_existent_model == model.dict(by_alias=True):
                 # TODO: log cmodel exists
                 print(f'Cmodel exists: {model.name}')
