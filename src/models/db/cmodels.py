@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List
-from bson.objectid import ObjectId
 
+from bson.objectid import ObjectId
 from pydantic import BaseModel
 
 from .base_model import MetadataBaseDoc
