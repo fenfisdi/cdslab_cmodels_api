@@ -27,7 +27,9 @@ class CModelsInterfaceTestCase(TestCase):
         self.test_collection = self.test_mock.collection
         self.mongo_crud = MongoCRUD(self.client, self.test_collection)
         self.mock_interface = CModelsInterface(
-            self.client, self.test_collection)
+            self.client, self.test_collection
+        )
+        self.cmodel_example_document = CompartmentalModelEnum.sir.value
 
     def tearDown(self):
         self.client.close()
@@ -36,7 +38,8 @@ class CModelsInterfaceTestCase(TestCase):
     def test_insert_one_cmodel_document_ok(self, mock: Mock):
 
         result = self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
         self.assertIsNotNone(result)
         self.assertIsInstance(result, InsertOneResult)
@@ -45,23 +48,34 @@ class CModelsInterfaceTestCase(TestCase):
     def test_insert_one_cmodel_document_exists(self, mock: Mock):
 
         self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
         result = self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
-        self.assertIsNotNone(result)
+        pruned_example_document = CModelsInterface._prune_db_document(
+            self.cmodel_example_document.dict(by_alias=True)
+        )
+
+        self.assertEqual(
+            result,
+            pruned_example_document
+        )
 
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_update(self, mock: Mock):
 
         self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
-        CompartmentalModelEnum.values()[0].state_variables = ['S', 'I']
+        self.cmodel_example_document.state_variables = ['S', 'I']
 
         result = self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
         self.assertIsNotNone(result)
         self.assertTrue(result)
@@ -69,15 +83,37 @@ class CModelsInterfaceTestCase(TestCase):
     @patch(solve_path('get_db'))
     def test_prune_db_document(self, mock: Mock):
 
-        query = {'name': 'SIR'}
+        _id = self.cmodel_example_document.id
 
         self.mock_interface.insert_one_cmodel_document(
-            CompartmentalModelEnum.values()[0])
+            self.cmodel_example_document
+        )
 
-        read_model = self.mock_interface.crud.read(query)
-        result = self.mock_interface._prune_db_document(read_model)
+        read_model = self.mock_interface.crud.read(_id)
+        pruned_document = self.mock_interface._prune_db_document(read_model)
 
-        self.assertIsNotNone(result)
+        self.assertIsNotNone(pruned_document)
+
+        try:
+            pruned_document['_id']
+        except KeyError:
+            self.assertTrue(True)
+        else:
+            self.fail('_id key not expected')
+
+        try:
+            pruned_document['inserted_at']
+        except KeyError:
+            self.assertTrue(True)
+        else:
+            self.fail('inserted_at key not expected')
+
+        try:
+            pruned_document['updated_at']
+        except KeyError:
+            self.assertTrue(True)
+        else:
+            self.fail('updated_at key not expected')
 
     @patch(solve_path('get_db'))
     def test_insert_all_models(self, mock: Mock):

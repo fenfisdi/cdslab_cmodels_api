@@ -1,4 +1,5 @@
 from typing import Any, Union
+from bson.objectid import ObjectId
 
 from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
@@ -25,9 +26,26 @@ class MongoCRUD():
         model: pymongo object
         """
         with self.db_connection:
+            try:
+                document['_id']
+            except KeyError:
+                raise ValueError('self.insert(): document must have key "_id"')
+
+            existent_document = self.collection.find_one(
+                self._id_to_dict(document['_id'])
+            )
+
+            if existent_document:
+                raise ValueError(
+                    f'Document with _id={document["_id"]} already exists in'
+                    'collection {self.collection}. if you want to change the'
+                    'fields\' values please use self.update'
+                )
+                # TODO: log
+
             return self.collection.insert_one(document)
 
-    def read(self, query: dict) -> Union[Any, None]:
+    def read(self, _id: ObjectId) -> Union[Any, None]:
         """Search for a specific model in ``self.collection``.
 
         Parameters
@@ -41,9 +59,9 @@ class MongoCRUD():
             Object containing the results of the search
         """
         with self.db_connection:
-            return self.collection.find_one(query)
+            return self.collection.find_one(self._id_to_dict(_id))
 
-    def update(self, query: dict, new_data: dict) -> bool:
+    def update(self, _id: ObjectId, new_data: dict) -> bool:
         """Update document in ``self.collection``.
 
         Parameters
@@ -62,20 +80,23 @@ class MongoCRUD():
         True:
             If the model has valid data and its status can be updated
         """
-
+        _id_dict = self._id_to_dict(_id)
         with self.db_connection:
-            if not query:
+            if not _id_dict:
                 return False
-            cmodel = self.collection.find_one(query)
+            cmodel = self.collection.find_one(_id_dict)
             if cmodel:
                 update_model = self.collection.update_one(
-                    query,
+                    _id_dict,
                     {"$set": new_data},
                 )
                 if update_model:
                     return True
             return False
 
-    def delete(self, query):
+    def delete(self, _id: ObjectId):
         with self.db_connection:
-            return self.collection.delete_one(query)
+            return self.collection.delete_one(self._id_to_dict(_id))
+
+    def _id_to_dict(self, _id: ObjectId):
+        return {'_id': _id} if _id else None

@@ -1,9 +1,10 @@
-from datetime import datetime
 from enum import Enum
 from typing import Dict, List
+from bson.objectid import ObjectId
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
+from .base_model import MetadataBaseDoc
 
 class CompartmentalModelBase(BaseModel):
     """Base Model for Compartmental Models
@@ -22,16 +23,7 @@ class CompartmentalModelBase(BaseModel):
     """Units of each parameter. The keys are the 'parameters' array elements"""
 
 
-class MetadataBase(BaseModel):
-    id: str = Field(..., alias='_id')
-    inserted_at: datetime
-    updated_at: datetime
-
-    class Config:
-        allow_population_by_field_name = True
-
-
-class CompartmentalModel(MetadataBase, CompartmentalModelBase):
+class CompartmentalModel(MetadataBaseDoc, CompartmentalModelBase):
     pass
 
 
@@ -42,7 +34,8 @@ class CompartmentalModelEnum(Enum):
     on the corresponding Compartmental Model. Each element is a
     :class:``CompartmentalModelBase`` object
     """
-    sir: CompartmentalModelBase = CompartmentalModelBase(
+    sir: CompartmentalModelBase = CompartmentalModel(
+        id=ObjectId('6083175ea91f5aacea234423'),
         name='SIR',
         state_variables=['S', 'I', 'R'],
         state_variables_units={
@@ -57,7 +50,8 @@ class CompartmentalModelEnum(Enum):
         },
     )
 
-    seir: CompartmentalModelBase = CompartmentalModelBase(
+    seir: CompartmentalModelBase = CompartmentalModel(
+        id=ObjectId('6083176ca91f5aacea234424'),
         name='SEIR',
         state_variables=['S', 'E', 'I', 'R'],
         state_variables_units={
@@ -73,7 +67,8 @@ class CompartmentalModelEnum(Enum):
         },
     )
 
-    seirv: CompartmentalModelBase = CompartmentalModelBase(
+    seirv: CompartmentalModelBase = CompartmentalModel(
+        id=ObjectId('608317d0a91f5aacea234426'),
         name='SEIRV',
         state_variables=['S', 'E', 'I', 'R', 'V'],
         state_variables_units={
@@ -92,7 +87,7 @@ class CompartmentalModelEnum(Enum):
     )
 
     @classmethod
-    def values(cls) -> List[CompartmentalModelBase]:
+    def values(cls) -> List[CompartmentalModel]:
         return [m.value for m in cls]
 
 
