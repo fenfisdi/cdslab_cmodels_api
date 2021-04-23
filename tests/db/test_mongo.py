@@ -3,9 +3,10 @@ from unittest.mock import patch, Mock
 
 from mongomock import patch as db_patch
 from pymongo.database import Database
+from pymongo.collection import Collection
 from pymongo import MongoClient
 
-from src.db.mongo import api_get_db_connection, get_db
+from src.db.mongo import api_get_db_connection, get_db, get_collection
 
 
 def solve_path(path: str):
@@ -40,3 +41,12 @@ class MongoTestCase(TestCase):
 
         self.assertIsInstance(db_connection, MongoClient)
         self.assertIsInstance(db, Database)
+
+    @db_patch(servers=(('mongodb://mongodb.example.com', 27017),))
+    @patch(solve_path('db_config'))
+    def test_get_collection(self, mock_config: Mock):
+
+        db_connection, coll = get_collection()
+
+        self.assertIsInstance(db_connection, MongoClient)
+        self.assertIsInstance(coll, Collection)
