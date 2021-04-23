@@ -49,7 +49,10 @@ class CModelsInterface:
             return model_inserted
 
     def insert_all_cmodel_documents(self):
-        return [self.insert_one_cmodel_document(model) for model in CompartmentalModelEnum.values()]
+        return [
+            self.insert_one_cmodel_document(model)
+            for model in CompartmentalModelEnum.values()
+        ]
 
     @staticmethod
     def _prune_db_document(model_in_db: dict) -> dict:

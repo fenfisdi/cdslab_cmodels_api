@@ -2,7 +2,7 @@ from enum import Enum
 from datetime import datetime
 
 from pydantic import BaseModel
-from.base_model import PydanticObjectId
+from .base_model import PydanticObjectId
 
 
 class SimulationType(str, Enum):
