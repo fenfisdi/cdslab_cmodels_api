@@ -32,10 +32,10 @@ class CModelsInterfaceTestCase(TestCase):
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_ok(self, mock: Mock):
 
-        self.result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(self.result)
+        self.assertIsNone(result)
 
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_exists(self, mock: Mock):
@@ -43,10 +43,10 @@ class CModelsInterfaceTestCase(TestCase):
         CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(self.result)
+        self.assertIsNone(result)
 
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_update(self, mock: Mock):
@@ -56,7 +56,7 @@ class CModelsInterfaceTestCase(TestCase):
 
         CompartmentalModelEnum.values()[0].state_variables = ['S', 'I']
 
-        self.result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(self.result)
+        self.assertIsNone(result)

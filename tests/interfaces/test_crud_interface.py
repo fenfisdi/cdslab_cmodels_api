@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 
 import mongomock
 from mongomock import patch as db_path
-from pymongo.results import InsertOneResult
+from pymongo.results import InsertOneResult, DeleteResult
 
 from src.interfaces.crud import MongoCRUD
 
@@ -69,3 +69,13 @@ class MongoCRUDTestCase(TestCase):
         result = self.mongo_crud.update(query, {})
 
         self.assertFalse(result)
+
+    @patch(solve_path('get_db'))
+    def test_delete_cmodel_state_ok(self, mock: Mock):
+        model = {'_id': 'example'}
+
+        self.mongo_crud.insert(model)
+        result = self.mongo_crud.delete(model)
+
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, DeleteResult)
