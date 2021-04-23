@@ -3,6 +3,7 @@ from src.interfaces.cmodels import CModelsInterface
 
 
 class CmodelUseCases:
+
     @staticmethod
     def update_cmodels_collection():
         db_connection, cmodels_coll = get_collection()
