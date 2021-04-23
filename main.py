@@ -8,7 +8,7 @@ if __name__ == '__main__':
     CmodelUseCases.update_cmodels_collection()
     uvicorn.run(
         "src.api:app",
-        host=settings['HOST'],
+        host=settings.get('HOST'),
         port=int(settings['PORT']),
         reload=True,
         debug=True,
