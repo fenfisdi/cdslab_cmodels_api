@@ -95,13 +95,6 @@ class CModelsInterfaceTestCase(TestCase):
         self.assertIsNotNone(pruned_document)
 
         try:
-            pruned_document['_id']
-        except KeyError:
-            self.assertTrue(True)
-        else:
-            self.fail('_id key not expected')
-
-        try:
             pruned_document['inserted_at']
         except KeyError:
             self.assertTrue(True)
