@@ -3,6 +3,7 @@ from unittest.mock import patch, Mock
 
 import mongomock
 from mongomock import patch as db_path
+from pymongo.results import InsertOneResult
 
 from src.interfaces.crud import MongoCRUD
 from src.interfaces.cmodels import CModelsInterface
@@ -25,6 +26,8 @@ class CModelsInterfaceTestCase(TestCase):
         self.test_mock = self.client.db
         self.test_collection = self.test_mock.collection
         self.mongo_crud = MongoCRUD(self.client, self.test_collection)
+        self.mock_interface = CModelsInterface(
+            self.client, self.test_collection)
 
     def tearDown(self):
         self.client.close()
@@ -32,31 +35,54 @@ class CModelsInterfaceTestCase(TestCase):
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_ok(self, mock: Mock):
 
-        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = self.mock_interface.insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(result)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, InsertOneResult)
 
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_exists(self, mock: Mock):
 
-        CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        self.mock_interface.insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = self.mock_interface.insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(result)
+        self.assertIsNotNone(result)
 
     @patch(solve_path('get_db'))
     def test_insert_one_cmodel_document_update(self, mock: Mock):
 
-        CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        self.mock_interface.insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
         CompartmentalModelEnum.values()[0].state_variables = ['S', 'I']
 
-        result = CModelsInterface(self.client, self.test_collection).insert_one_cmodel_document(
+        result = self.mock_interface.insert_one_cmodel_document(
             CompartmentalModelEnum.values()[0])
 
-        self.assertIsNone(result)
+        self.assertIsNotNone(result)
+        self.assertTrue(result)
+
+    @patch(solve_path('get_db'))
+    def test_prune_db_document(self, mock: Mock):
+
+        query = {'name': 'SIR'}
+
+        self.mock_interface.insert_one_cmodel_document(
+            CompartmentalModelEnum.values()[0])
+
+        read_model = self.mock_interface.crud.read(query)
+        result = self.mock_interface._prune_db_document(read_model)
+
+        self.assertIsNotNone(result)
+
+    @patch(solve_path('get_db'))
+    def test_insert_all_models(self, mock: Mock):
+
+        result = self.mock_interface.insert_all_cmodel_documents()
+
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result[0], InsertOneResult)

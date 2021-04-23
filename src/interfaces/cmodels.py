@@ -39,22 +39,25 @@ class CModelsInterface:
             if pruned_existent_model == model.dict(by_alias=True):
                 # TODO: log cmodel exists
                 print(f'Cmodel exists: {model.name}')
+                return pruned_existent_model
             else:
                 cmodel_document.pop('inserted_at')
-                self.crud.update(
+                modelupdated = self.crud.update(
                     id_dict,
                     cmodel_document
                 )
                 # TODO log updated cmodel
                 print(f'Updated cmodel: {model.name}')
+                return modelupdated
         else:
-            self.crud.insert(cmodel_document)
+            model_inserted = self.crud.insert(cmodel_document)
             # TODO: log created cmodel
             print(f'Created cmodel: {model.name}')
+            return model_inserted
 
     def insert_all_cmodel_documents(self):
-        for model in CompartmentalModelEnum.values():
-            self.insert_one_cmodel_document(model)
+
+        return [self.insert_one_cmodel_document(model) for model in CompartmentalModelEnum.values()]
 
     @staticmethod
     def _prune_db_document(model_in_db: dict) -> dict:

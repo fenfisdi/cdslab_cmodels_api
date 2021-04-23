@@ -32,6 +32,3 @@ def test_CModel(instance: CModel):
 def test_AllCmodels(instance: AllCModels):
     for model in instance.models:
         assert isinstance(model, CompartmentalModelBase)
-
-
-print(CompartmentalModelEnum.values()[0])

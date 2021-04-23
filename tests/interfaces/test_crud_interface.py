@@ -71,6 +71,14 @@ class MongoCRUDTestCase(TestCase):
         self.assertFalse(result)
 
     @patch(solve_path('get_db'))
+    def test_update_cmodel_state_no_query(self, mock: Mock):
+        query = {}
+
+        result = self.mongo_crud.update(query, {})
+
+        self.assertFalse(result)
+
+    @patch(solve_path('get_db'))
     def test_delete_cmodel_state_ok(self, mock: Mock):
         model = {'_id': 'example'}
 
