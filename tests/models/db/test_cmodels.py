@@ -4,8 +4,7 @@ from hypothesis import given, strategies as st
 from src.models.db.cmodels import (
     CompartmentalModelBase,
     CompartmentalModelEnum,
-    CModel,
-    AllCModels,
+    CModel
 )
 
 
@@ -26,9 +25,3 @@ def test_CompartmentalModel(model: CompartmentalModelEnum):
 @given(st.builds(CModel))
 def test_CModel(instance: CModel):
     assert isinstance(instance.model, CompartmentalModelEnum)
-
-
-@given(st.builds(AllCModels))
-def test_AllCmodels(instance: AllCModels):
-    for model in instance.models:
-        assert isinstance(model, CompartmentalModelBase)

@@ -93,9 +93,3 @@ class CompartmentalModelEnum(Enum):
 
 class CModel(BaseModel):
     model: CompartmentalModelEnum
-
-
-class AllCModels(BaseModel):
-    models: List[CompartmentalModelEnum] = [
-        model.value for model in CompartmentalModelEnum
-    ]
