@@ -1,13 +1,16 @@
-from src.db.mongo import get_collection
+from src.db.mongo import MongoClientSingleton
 from src.interfaces.cmodels import CModelsInterface
 
 
 class CmodelUseCases:
-    db_connection, cmodels_coll = get_collection()
-    cmodels_interface = CModelsInterface(db_connection, cmodels_coll)
 
-    @staticmethod
-    def update_cmodels_collection(
-        cmodels_interface: CModelsInterface = cmodels_interface
-    ):
-        cmodels_interface.insert_all_cmodel_documents()
+    def __init__(
+        self,
+        mongo_singleton: MongoClientSingleton = MongoClientSingleton()
+    ) -> None:
+        self.mongo_singleton = mongo_singleton
+        self.db_connection, self.cmodels_coll = self.mongo_singleton.get_collection()
+        self.cmodels_interface = CModelsInterface(self.db_connection, self.cmodels_coll)
+
+    def update_cmodels_collection(self) -> None:
+        self.cmodels_interface.insert_all_cmodel_documents()
