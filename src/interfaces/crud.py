@@ -4,7 +4,7 @@ from pymongo.collection import Collection
 from pymongo.mongo_client import MongoClient
 
 
-class MongoCRUD():
+class MongoCRUD:
     def __init__(
         self,
         db_connection: MongoClient,

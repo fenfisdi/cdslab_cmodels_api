@@ -1,63 +1,59 @@
 from typing import Generator, Tuple
 
 from pymongo import MongoClient
-from pymongo.database import Database
 from pymongo.collection import Collection
+from pymongo.database import Database
 
 from src.config import db_config
+from src.utils.patterns import Singleton
 
 
-def api_get_db_connection(
-    db_uri: str = db_config['MONGO_URI'],
-) -> Generator[MongoClient, None, None]:
-    """Creates connection to Mongodb server.
+class MongoConnection(metaclass=Singleton):
+    db_uri = db_config.get('MONGO_URI')
+    db_name = db_config.get('MONGO_DB')
+    collection_name = db_config.get('CMODELS_COLL')
 
-    Yields
-    ------
-    db_connection: MongoClient
-        Object containing the db connection.
-    """
-    db_connection = MongoClient(db_uri)
+    def api_get_db_connection(self) -> Generator[MongoClient, None, None]:
+        """Creates connection to Mongodb server.
 
-    try:
-        yield db_connection
-    finally:
-        db_connection.close()
+        Yields
+        ------
+        db_connection: MongoClient
+            Object containing the db connection.
+        """
+        db_connection = MongoClient(self.db_uri)
 
+        try:
+            yield db_connection
+        finally:
+            db_connection.close()
 
-def get_db(
-    db_uri: str = db_config['MONGO_URI'],
-    db_name: str = db_config['MONGO_DB']
-) -> Tuple[MongoClient, Database]:
-    """Gets Mongodb connection and database.
+    def get_db(self) -> Tuple[MongoClient, Database]:
+        """Gets Mongodb connection and database.
 
-    Parameters
-    ----------
-    db_uri: str
-        Mongo server URI.
-    db_name: str
-        Mongo database name.
+        Returns
+        -------
+        db_connection : MongoClient
+        db : pymongo.database.Database
+        """
+        db_connection = MongoClient(self.db_uri)
+        db: Database = db_connection[self.db_name]
 
-    Returns
-    -------
-    db_connection : MongoClient
-    db : pymongo.database.Database
-    """
-    db_connection = MongoClient(db_uri)
-    db: Database = db_connection[db_name]
+        return db_connection, db
 
-    return db_connection, db
-
-
-def get_collection(
-    coll_name: str = db_config['CMODELS_COLL']
-) -> Tuple[MongoClient, Collection]:
-    """
-    Returns
-    -------
-    db_connection: pymongo.MongoClient
-    coll: pymongo.collection.Collection
-    """
-    db_connection, db = get_db()
-    coll: Collection = db[coll_name]
-    return db_connection, coll
+    def get_collection(
+            self,
+            collection_name: str = None
+    ) -> Tuple[MongoClient, Collection]:
+        """
+        Returns
+        -------
+        db_connection: pymongo.MongoClient
+        coll: pymongo.collection.Collection
+        """
+        if not collection_name:
+            collection_name = self.collection_name
+            pass
+        db_connection, db = self.get_db()
+        coll: Collection = db[collection_name]
+        return db_connection, coll
