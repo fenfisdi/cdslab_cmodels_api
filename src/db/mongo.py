@@ -10,7 +10,7 @@ from src.utils.patterns import Singleton
 
 
 class MongoClientSingleton(metaclass=Singleton):
-    db_uri: str = db_config.get('MONGO_URI'),
+    db_uri: Optional[str] = db_config.get('MONGO_URI'),
 
     def __init__(
         self,
