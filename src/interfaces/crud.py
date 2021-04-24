@@ -1,18 +1,16 @@
 from typing import Any, Union
 from bson.objectid import ObjectId
 
-from pymongo.collection import Collection
-from pymongo.mongo_client import MongoClient
+from src.db.mongo import MongoClientSingleton
 
 
 class MongoCRUD:
     def __init__(
         self,
-        db_connection: MongoClient,
-        collection: Collection
+        mongo_singleton: MongoClientSingleton
     ) -> None:
-        self.db_connection = db_connection
-        self.collection = collection
+        self.mongo_singleton = mongo_singleton
+        self.db_connection, self.collection = self.mongo_singleton.get_collection()
 
     def insert(self, document: dict):
         """

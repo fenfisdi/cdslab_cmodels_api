@@ -1,5 +1,3 @@
-
-from src.db.mongo import MongoClientSingleton
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
@@ -9,6 +7,7 @@ from mongomock import patch as db_path
 from src.use_cases.cmodels import CmodelUseCases
 from src.interfaces.crud import MongoCRUD
 from src.models.db.cmodels import CompartmentalModelEnum
+from src.db.mongo import MongoClientSingleton
 
 
 class CmodelUseCasesTestCase(TestCase):
@@ -24,11 +23,12 @@ class CmodelUseCasesTestCase(TestCase):
             coll=self.collection_mock
         )
         self.mongo_crud_mock = MongoCRUD(
-            *self.mongo_singleton_mock.get_collection()
+            self.mongo_singleton_mock
         )
         self.cmodel_use_cases = CmodelUseCases(self.mongo_singleton_mock)
 
     def tearDown(self):
+        self.collection_mock.drop()
         self.connection_mock.close()
 
     @patch('src.config.db_config')

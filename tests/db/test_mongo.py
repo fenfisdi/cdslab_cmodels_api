@@ -3,9 +3,6 @@ from unittest.mock import patch, Mock
 
 import mongomock
 from mongomock import patch as db_path
-from pymongo.collection import Collection
-from pymongo.database import Database
-from pymongo.mongo_client import MongoClient
 
 from src.db.mongo import MongoClientSingleton
 
@@ -27,6 +24,7 @@ class MongoTestCase(TestCase):
         )
 
     def tearDown(self):
+        self.collection_mock.drop()
         self.connection_mock.close()
 
     @patch(solve_path('db_config'))
@@ -34,7 +32,7 @@ class MongoTestCase(TestCase):
         db_connection_gen = self.mongo_singleton_mock.api_get_db_connection()
         db_connection = next(db_connection_gen)
 
-        self.assertIsInstance(db_connection, MongoClient)
+        self.assertIsInstance(db_connection, mongomock.MongoClient)
 
         with self.assertRaises(StopIteration):
             next(db_connection_gen)
@@ -45,13 +43,13 @@ class MongoTestCase(TestCase):
             "test_db"
         )
 
-        self.assertIsInstance(db_connection, MongoClient)
-        self.assertIsInstance(db, Database)
+        self.assertIsInstance(db_connection, mongomock.MongoClient)
+        self.assertIsInstance(db, mongomock.Database)
 
     @patch(solve_path('db_config'))
     def test_get_collection(self, mock_config: Mock):
 
         db_connection, coll = self.mongo_singleton_mock.get_collection()
 
-        self.assertIsInstance(db_connection, MongoClient)
-        self.assertIsInstance(coll, Collection)
+        self.assertIsInstance(db_connection, mongomock.MongoClient)
+        self.assertIsInstance(coll, mongomock.Collection)

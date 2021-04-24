@@ -70,7 +70,7 @@ class MongoClientSingleton(metaclass=Singleton):
         return self._db
 
     @db.setter
-    def db(self, value):                                         # noqa
+    def db(self, value):                                                 # noqa
         if isinstance(value, str):
             self._db = self.db_connection[value]
         elif isinstance(value, Database) or isinstance(value, mongomock.Database):

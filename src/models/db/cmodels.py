@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from .base_model import MetadataBaseDoc
 
+
 class CompartmentalModelBase(BaseModel):
     """Base Model for Compartmental Models
     """

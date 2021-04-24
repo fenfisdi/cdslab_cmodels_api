@@ -1,8 +1,6 @@
 from datetime import datetime
 
-from pymongo.collection import Collection
-from pymongo.mongo_client import MongoClient
-
+from src.db.mongo import MongoClientSingleton
 from src.models.db.cmodels import (
     CompartmentalModel,
     CompartmentalModelEnum
@@ -14,10 +12,10 @@ class CModelsInterface:
 
     def __init__(
         self,
-        db_connection: MongoClient,
-        collection: Collection
+        mongo_singleton: MongoClientSingleton
     ) -> None:
-        self.crud = MongoCRUD(db_connection, collection)
+        self.mongo_singleton = mongo_singleton
+        self.crud = MongoCRUD(self.mongo_singleton)
 
     def insert_one_cmodel_document(self, model: CompartmentalModel):
 

@@ -7,6 +7,7 @@ from pymongo.results import InsertOneResult, DeleteResult
 
 from src.interfaces.crud import MongoCRUD
 from src.models.db.cmodels import CompartmentalModelEnum
+from src.db.mongo import MongoClientSingleton
 
 
 def solve_path(path: str):
@@ -21,11 +22,17 @@ class MongoCRUDTestCase(TestCase):
         self.connection_mock = mongomock.MongoClient('server.example.com')
         self.db_mock = self.connection_mock.db
         self.collection_mock = self.db_mock.collection
-        self.mongo_crud_mock = MongoCRUD(self.connection_mock, self.collection_mock)
+        self.mongo_singleton_mock = MongoClientSingleton(
+            db_connection=self.connection_mock,
+            db=self.db_mock,
+            coll=self.collection_mock
+        )
+        self.mongo_crud_mock = MongoCRUD(self.mongo_singleton_mock)
         self._id_example = CompartmentalModelEnum.sir.value.id
         self.model_example = {'_id': self._id_example}
 
     def tearDown(self):
+        self.mongo_singleton_mock.coll.drop()
         self.connection_mock.close()
 
     @patch(solve_path('db_config'))

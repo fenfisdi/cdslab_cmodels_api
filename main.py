@@ -1,3 +1,4 @@
+from src.db.mongo import MongoClientSingleton
 import uvicorn
 
 from src.api import app
@@ -7,7 +8,8 @@ from src.use_cases.cmodels import CmodelUseCases
 __all__ = ['app']
 
 if __name__ == '__main__':
-    CmodelUseCases.update_cmodels_collection()
+    mongo_singleton = MongoClientSingleton()
+    CmodelUseCases(mongo_singleton).update_cmodels_collection()
     uvicorn.run(
         "src.api:app",
         host=settings.get('HOST'),
