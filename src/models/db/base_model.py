@@ -1,8 +1,7 @@
-from enum import Enum
 from datetime import datetime
 
+from pydantic import BaseModel, Field
 from bson.objectid import ObjectId as BsonObjectId
-from pydantic import BaseModel
 
 
 class PydanticObjectId(BsonObjectId):
@@ -17,14 +16,11 @@ class PydanticObjectId(BsonObjectId):
         return v
 
 
-class SimulationType(str, Enum):
-    optimize = 'Optimize parameters'
-    fixed = 'Fixed parameters'
+class MetadataBaseDoc(BaseModel):
+    id: PydanticObjectId = Field(..., alias='_id')
+    inserted_at: datetime = datetime.utcnow()
+    updated_at: datetime = datetime.utcnow()
 
-
-class SimulationConfig(BaseModel):
-    user_id: PydanticObjectId
-    model_id: str
-    name: str
-    creation_date: datetime = datetime.now()
-    simulation_type: SimulationType
+    class Config:
+        allow_population_by_field_name = True
+        extra = 'forbid'

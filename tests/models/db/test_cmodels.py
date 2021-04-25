@@ -1,10 +1,10 @@
+import pytest
 from hypothesis import given, strategies as st
 
-from src.models.routers.cmodel import (
+from src.models.db.cmodels import (
     CompartmentalModelBase,
-    CompartmentalModel,
-    CModel,
-    AllCModels,
+    CompartmentalModelEnum,
+    CModel
 )
 
 
@@ -17,17 +17,11 @@ def test_CompartmentalModelBase_properties(instance: CompartmentalModelBase):
     assert isinstance(instance.parameters_units, dict)
 
 
-def test_CompartmentalModel():
-    for model in CompartmentalModel:
-        assert isinstance(model.value, CompartmentalModelBase)
+@pytest.mark.parametrize('model', [model for model in CompartmentalModelEnum])
+def test_CompartmentalModel(model: CompartmentalModelEnum):
+    assert isinstance(model.value, CompartmentalModelBase)
 
 
 @given(st.builds(CModel))
 def test_CModel(instance: CModel):
-    assert isinstance(instance.model, CompartmentalModel)
-
-
-@given(st.builds(AllCModels))
-def test_AllCmodels(instance: AllCModels):
-    for model in instance.models:
-        assert isinstance(model, CompartmentalModelBase)
+    assert isinstance(instance.model, CompartmentalModelEnum)
