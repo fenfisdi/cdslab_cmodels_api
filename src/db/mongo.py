@@ -37,7 +37,7 @@ class MongoClientSingleton(metaclass=Singleton):
 
     def get_db(
         self,
-        db: Optional[Union[str, Database]] = None
+        db: Optional[str] = None
     ) -> Tuple[MongoClient, Database]:
         """Gets Mongodb connection and database.
 
@@ -46,14 +46,13 @@ class MongoClientSingleton(metaclass=Singleton):
         db_connection : MongoClient
         db : pymongo.database.Database
         """
-        if db:
+        if db and isinstance(db, str):
             self.db = db
         return self.db_connection, self.db
 
     def get_collection(
         self,
-        db_name: str = db_config.get('MONGO_DB'),
-        coll: Optional[Union[str, Database]] = None
+        coll: Optional[str] = None
     ) -> Tuple[MongoClient, Collection]:
         """
         Returns
@@ -61,7 +60,7 @@ class MongoClientSingleton(metaclass=Singleton):
         db_connection: pymongo.MongoClient
         coll: pymongo.collection.Collection
         """
-        if coll:
+        if coll and isinstance(coll, str):
             self.coll = coll
         return self.db_connection, self.coll
 

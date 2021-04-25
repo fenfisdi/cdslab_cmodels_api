@@ -49,7 +49,9 @@ class MongoTestCase(TestCase):
     @patch(solve_path('db_config'))
     def test_get_collection(self, mock_config: Mock):
 
-        db_connection, coll = self.mongo_singleton_mock.get_collection()
+        db_connection, coll = self.mongo_singleton_mock.get_collection(
+            'test_coll'
+        )
 
         self.assertIsInstance(db_connection, mongomock.MongoClient)
         self.assertIsInstance(coll, mongomock.Collection)
