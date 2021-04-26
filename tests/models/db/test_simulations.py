@@ -26,6 +26,7 @@ sim_config = {
     'attached_time_series': None
 }
 
+
 def test_SimulationType():
     assert len(SimulationType) == 2
     assert SimulationType.optimize.value == 'Optimize parameters'
