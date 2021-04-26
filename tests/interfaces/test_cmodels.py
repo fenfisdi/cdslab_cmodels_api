@@ -82,6 +82,8 @@ class CModelsInterfaceTestCase(TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(result)
 
+        self.cmodel_example_document.state_variables = ['S', 'I', 'R']
+
     @patch(solve_path('db_config'))
     def test_prune_db_document(self, mock: Mock):
 

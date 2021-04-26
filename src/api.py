@@ -5,6 +5,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from src.config import settings
 from src.routers.main import main_router
 
+
 app = FastAPI()
 
 app.add_middleware(
