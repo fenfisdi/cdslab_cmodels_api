@@ -10,6 +10,7 @@ from src.models.db.cmodels import CompartmentalModelEnum
 from src.db.mongo import MongoClientSingleton
 from tests import settings
 
+
 class CModelsInterfaceTestCase(TestCase):
 
     @db_path(servers=(('server.example.com', 27017),))
