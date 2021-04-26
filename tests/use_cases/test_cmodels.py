@@ -8,6 +8,7 @@ from src.use_cases.cmodels import CmodelUseCases
 from src.interfaces.crud import MongoCRUD
 from src.models.db.cmodels import CompartmentalModelEnum
 from src.db.mongo import MongoClientSingleton
+from tests import settings
 
 
 class CmodelUseCasesTestCase(TestCase):
@@ -31,7 +32,7 @@ class CmodelUseCasesTestCase(TestCase):
         self.collection_mock.drop()
         self.connection_mock.close()
 
-    @patch('src.config.db_config')
+    @patch(settings)
     def test_cmodels_in_ok(self, mock: Mock):
         self.cmodel_use_cases.update_cmodels_collection()
         for model in CompartmentalModelEnum.values():
