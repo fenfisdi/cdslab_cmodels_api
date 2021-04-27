@@ -1,10 +1,11 @@
 from enum import Enum
+from src.models.general_config import GeneralConfig
 from typing import Dict, List
 
 from bson.objectid import ObjectId
 from pydantic import BaseModel
 
-from .base_model import MetadataBaseDoc
+from .metadata import MetadataBaseDoc
 
 
 class CompartmentalModelBase(BaseModel):
@@ -25,7 +26,8 @@ class CompartmentalModelBase(BaseModel):
 
 
 class CompartmentalModel(MetadataBaseDoc, CompartmentalModelBase):
-    pass
+    class Config(GeneralConfig):
+        ...
 
 
 class CompartmentalModelEnum(Enum):

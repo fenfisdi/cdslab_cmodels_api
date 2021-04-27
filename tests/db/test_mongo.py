@@ -5,11 +5,7 @@ import mongomock
 from mongomock import patch as db_path
 
 from src.db.mongo import MongoClientSingleton
-
-
-def solve_path(path: str):
-    source = 'src.config'
-    return ".".join([source, path])
+from tests import settings
 
 
 class MongoTestCase(TestCase):
@@ -27,7 +23,7 @@ class MongoTestCase(TestCase):
         self.collection_mock.drop()
         self.connection_mock.close()
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_get_db_connection(self, mock: Mock):
         db_connection_gen = self.mongo_singleton_mock.api_get_db_connection()
         db_connection = next(db_connection_gen)
@@ -37,7 +33,7 @@ class MongoTestCase(TestCase):
         with self.assertRaises(StopIteration):
             next(db_connection_gen)
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_get_db(self, mock_config: Mock):
         db_connection, db = self.mongo_singleton_mock.get_db(
             "test_db"
@@ -46,7 +42,7 @@ class MongoTestCase(TestCase):
         self.assertIsInstance(db_connection, mongomock.MongoClient)
         self.assertIsInstance(db, mongomock.Database)
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_get_collection(self, mock_config: Mock):
 
         db_connection, coll = self.mongo_singleton_mock.get_collection(

@@ -8,11 +8,7 @@ from pymongo.results import InsertOneResult
 from src.interfaces.cmodels import CModelsInterface
 from src.models.db.cmodels import CompartmentalModelEnum
 from src.db.mongo import MongoClientSingleton
-
-
-def solve_path(path: str):
-    source = 'src.config'
-    return ".".join([source, path])
+from tests import settings
 
 
 class CModelsInterfaceTestCase(TestCase):
@@ -36,7 +32,7 @@ class CModelsInterfaceTestCase(TestCase):
         self.mongo_singleton_mock.coll.drop()
         self.connection_mock.close()
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_insert_one_cmodel_document_ok(self, mock: Mock):
 
         result = self.cmodels_interface_mock.insert_one_cmodel_document(
@@ -46,7 +42,7 @@ class CModelsInterfaceTestCase(TestCase):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, InsertOneResult)
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_insert_one_cmodel_document_exists(self, mock: Mock):
 
         self.cmodels_interface_mock.insert_one_cmodel_document(
@@ -66,7 +62,7 @@ class CModelsInterfaceTestCase(TestCase):
             pruned_example_document
         )
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_insert_one_cmodel_document_update(self, mock: Mock):
 
         self.cmodels_interface_mock.insert_one_cmodel_document(
@@ -82,7 +78,9 @@ class CModelsInterfaceTestCase(TestCase):
         self.assertIsNotNone(result)
         self.assertTrue(result)
 
-    @patch(solve_path('db_config'))
+        self.cmodel_example_document.state_variables = ['S', 'I', 'R']
+
+    @patch(settings)
     def test_prune_db_document(self, mock: Mock):
 
         _id = self.cmodel_example_document.id
@@ -110,7 +108,7 @@ class CModelsInterfaceTestCase(TestCase):
         else:
             self.fail('updated_at key not expected')
 
-    @patch(solve_path('db_config'))
+    @patch(settings)
     def test_insert_all_models(self, mock: Mock):
 
         result = self.cmodels_interface_mock.insert_all_cmodel_documents()

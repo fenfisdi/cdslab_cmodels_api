@@ -5,18 +5,18 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 import mongomock
 
-from src.config import db_config
+from src.config import settings
 from src.utils.patterns import Singleton
 
 
 class MongoClientSingleton(metaclass=Singleton):
-    db_uri: Optional[str] = db_config.get('MONGO_URI'),
+    db_uri: Optional[str] = settings.get('MONGO_URI'),
 
     def __init__(
         self,
         db_connection: MongoClient = MongoClient(db_uri),
-        db: Union[str, Database] = db_config.get('MONGO_DB'),
-        coll: Union[str, Collection] = db_config.get('CMODELS_COLL')
+        db: Union[str, Database] = settings.get('MONGO_DB'),
+        coll: Union[str, Collection] = settings.get('CMODELS_COLL')
     ) -> None:
         self.db_connection = db_connection
         self.db = db
@@ -80,7 +80,7 @@ class MongoClientSingleton(metaclass=Singleton):
         return self._coll
 
     @coll.setter
-    def coll(self, value):                                               # noqa 
+    def coll(self, value):                                               # noqa
         if isinstance(value, str):
             self._coll = self.db[value]
         elif isinstance(value, Collection) or isinstance(value, mongomock.Collection):

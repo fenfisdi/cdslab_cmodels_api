@@ -1,18 +1,8 @@
-from enum import Enum
-from datetime import datetime
+from typing import Any, Optional
 
-from pydantic import BaseModel
-from .base_model import PydanticObjectId
-
-
-class SimulationType(str, Enum):
-    optimize = 'Optimize parameters'
-    fixed = 'Fixed parameters'
+from .metadata import MetadataBaseDoc
+from src.models.routers.simulations import SimulationConfig
 
 
-class SimulationConfig(BaseModel):
-    user_id: PydanticObjectId
-    model_id: str
-    name: str
-    creation_date: datetime = datetime.now()
-    simulation_type: SimulationType
+class SimulationConfigDB(MetadataBaseDoc, SimulationConfig):
+    attached_time_series: Optional[Any]  # Binary file
