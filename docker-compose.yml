@@ -25,7 +25,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - cdslab_cmodels_mongo_data:/tmp/data/cdslab_cmodels_mongo/
+      - cdslab_cmodels_mongo_data:/data/db
 
 networks:
   cdslab_cmodels_net:
