@@ -19,10 +19,12 @@ class CompartmentalModelBase(BaseModel):
     """Units of each state variable. The keys are the 'state_variables' array
     elements
     """
+    state_variables_names: Dict[str, str]
     parameters: List[str]
     """Parameters of the corresponding model"""
     parameters_units: Dict[str, str]
     """Units of each parameter. The keys are the 'parameters' array elements"""
+    parameters_names: Dict[str, str]
 
 
 class CompartmentalModel(MetadataBaseDoc, CompartmentalModelBase):
@@ -41,12 +43,21 @@ class CompartmentalModelEnum(Enum):
         id=ObjectId('6083175ea91f5aacea234423'),
         name='SIR',
         state_variables=['S', 'I', 'R'],
+        state_variables_names={
+            'S': 'Susceptible',
+            'I': 1,
+            'R': 2
+        },
         state_variables_units={
             'S': 'persons',
             'I': 'persons',
             'R': 'persons',
         },
         parameters=['a', 'b'],
+        parameters_names={
+            'a': 'name of a',
+            'b': 'name of b',
+        },
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
@@ -57,6 +68,11 @@ class CompartmentalModelEnum(Enum):
         id=ObjectId('6083176ca91f5aacea234424'),
         name='SEIR',
         state_variables=['S', 'E', 'I', 'R'],
+        state_variables_names={
+            'S': 'Susceptible',
+            'I': 1,
+            'R': 2
+        },
         state_variables_units={
             'S': 'persons',
             'E': 'persons',
@@ -64,6 +80,10 @@ class CompartmentalModelEnum(Enum):
             'R': 'persons',
         },
         parameters=['a', 'b'],
+        parameters_names={
+            'a': 'name of a',
+            'b': 'name of b',
+        },
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
@@ -74,6 +94,11 @@ class CompartmentalModelEnum(Enum):
         id=ObjectId('608317d0a91f5aacea234426'),
         name='SEIRV',
         state_variables=['S', 'E', 'I', 'R', 'V'],
+        state_variables_names={
+            'S': 'Susceptible',
+            'I': 1,
+            'R': 2
+        },
         state_variables_units={
             'S': 'persons',
             'E': 'persons',
@@ -82,6 +107,10 @@ class CompartmentalModelEnum(Enum):
             'V': 'persons',
         },
         parameters=['a', 'b'],
+        parameters_names={
+            'a': 'name of a',
+            'b': 'name of b',
+        },
         parameters_units={
             'a': 'units of a',
             'b': 'units of b',
