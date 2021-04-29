@@ -12,7 +12,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-    - cdslab_cmodels_app_data:/app/src
+      - ./src:/app/src
 
   cdslab_cmodels_mongo:
     container_name: cdslab_cmodels_mongo
@@ -25,15 +25,9 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - cdslab_cmodels_mongo_data:/data/db
+      - /tmp/data/cdslab:/data/db
 
 networks:
   cdslab_cmodels_net:
     name: cdslab_cmodels_net
     driver: bridge
-
-volumes:
-  cdslab_cmodels_app_data:
-    driver: local
-  cdslab_cmodels_mongo_data:
-    driver: local
