@@ -1,32 +1,33 @@
 version: "3.5"
 services:
-  user_app:
+  cdslab_cmodels_app:
     build: .
-    container_name: cdslab_models_app
+    container_name: cdslab_cmodels_app
     env_file: .env
     image: cdslab_user
     networks:
-      - cdslab_models
+      - cdslab_cmodels_net
+    depends_on:
+      - cdslab_cmodels_mongo
     ports:
       - 5000:5000
     volumes:
-    - ./src:/app/src
+      - ./src:/app/src
 
-  user_mongo:
-    container_name: cdslab_models_mongo
+  cdslab_cmodels_mongo:
+    container_name: cdslab_cmodels_mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: cdsuser
       MONGO_INITDB_ROOT_PASSWORD: cdspass
     image: mongo:3-xenial
     networks:
-      - cdslab_models
+      - cdslab_cmodels_net
     ports:
       - 27017:27017
     volumes:
-      - /tmp/data/cdslab_models/:/data/db
-
+      - /tmp/data/cdslab:/data/db
 
 networks:
-  cdslab_models:
-    name: cdslab_user
+  cdslab_cmodels_net:
+    name: cdslab_cmodels_net
     driver: bridge
