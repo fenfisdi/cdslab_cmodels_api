@@ -2,9 +2,16 @@ from typing import Tuple, Dict, Optional
 from datetime import datetime
 
 from pydantic import BaseModel, Field, validator
+from bson.objectid import ObjectId as BsonObjectId
 
 from src.models.general_config import GeneralConfig, PydanticObjectId
 from src.models.db.cmodels import CompartmentalModelEnum
+
+
+DatesIntervalType = Tuple[datetime, datetime]
+ParamsLimitsType = Dict[str, Tuple[float, float]]
+StateVarsType = Dict[str, float]
+StateVarFitType = Optional[str]
 
 
 class SimulationConfig(BaseModel):
@@ -15,19 +22,21 @@ class SimulationConfig(BaseModel):
     """Compartmental Model iD in mongodb"""
     optimize_parameters: bool
     """``True`` means optimize parameters, ``False`` means fixed parameters."""
-    dates_interval: Tuple[datetime, datetime]
+    dates_interval: DatesIntervalType
     """initial and final dates"""
-    parameters_limits: Dict[str, Tuple[float, Optional[float]]]
-    """{'<parameter_name>': (min_value, max_value)}"""
-    state_variables_init_vals: Dict[str, float]
+    parameters_limits: ParamsLimitsType
+    """{'<parameter_name>': (min_value, max_value)}. ``min_value == max_value``
+    will be interpreted as a constant parameter.
+    """
+    state_variables_init_vals: StateVarsType
     """Must be given when ``optimize_parameters`` is true
     schema: ``{'<state_variable_name>': initial_value (float)}``
     """
-    state_variable_to_fit: Optional[str]
+    state_variable_to_fit: StateVarFitType
     """Must be given when ``optimize_parameters`` is true"""
 
     @validator('cmodel_id', check_fields=False, pre=True)
-    def cmodel_exists(cls, v):
+    def cmodel_exists(cls, v: BsonObjectId):
         """Validates that cmodel exists in database"""
         for cmodel in CompartmentalModelEnum.values():
             if cmodel.id == v:
@@ -35,7 +44,7 @@ class SimulationConfig(BaseModel):
         raise ValueError('Compartmental model not found')
 
     @validator('dates_interval')
-    def dates_start_end(cls, v: Tuple[datetime, datetime], **kwargs):
+    def dates_start_end(cls, v: DatesIntervalType, **kwargs):
         """Validates that initial date is before final date"""
         if v[0] < v[1]:
             return v
@@ -43,11 +52,7 @@ class SimulationConfig(BaseModel):
             raise ValueError('Initial date must be before final date.')
 
     @validator('parameters_limits', check_fields=False)
-    def appropiate_parameters_names(
-        cls,
-        v: Dict[str, Tuple[float, float]],
-        values
-    ):
+    def appropriate_parameters_names(cls, v: ParamsLimitsType, values):
         """Validates that given parameters correspond to parameters of
         chosen compartmental model.
         """
@@ -65,21 +70,19 @@ class SimulationConfig(BaseModel):
         )
 
     @validator('parameters_limits', check_fields=False)
-    def appropiate_parameters_limits(
-        cls,
-        v: Dict[str, Tuple[float, float]]
-    ):
+    def appropriate_parameters_limits(cls, v: ParamsLimitsType):
         """Validates that minimum limit is less than maximum limit"""
         for _, limits in v.items():
-            if limits[0] >= limits[1] and not (limits[1] is None):
+            if limits[0] > limits[1]:
                 raise ValueError(
-                    'minimum value should be less than maximum value.'
+                    'minimum value should be less than or equal to maximum '
+                    'value.'
                 )
 
         return v
 
     @validator('state_variables_init_vals', check_fields=False)
-    def appropiate_state_variables(cls, v: Dict[str, str], values, **kwargs):
+    def appropriate_state_vars_names(cls, v: StateVarsType, values, **kwargs):
         """Validates that given state variables correspond to state variables
         of chosen compartmental model.
         """
@@ -92,12 +95,12 @@ class SimulationConfig(BaseModel):
                 return v
 
         raise ValueError(
-            'Parameter names do not correspond with chosen '
+            'State variables\' names do not correspond with chosen '
             'compartmental model.'
         )
 
     @validator('state_variable_to_fit')
-    def valid_state_variable(cls, v: Optional[str], values: dict):
+    def valid_state_variable_fit(cls, v: StateVarFitType, values: dict):
         for cmodel in CompartmentalModelEnum.values():
             if (
                 'cmodel_id' in values.keys()
@@ -106,8 +109,7 @@ class SimulationConfig(BaseModel):
             ):
                 return v
             raise ValueError(
-                'Not a valid state variable for given'
-                'compartmentalmodel'
+                'Not a valid state variable for given compartmental model.'
             )
 
     class Config(GeneralConfig):
