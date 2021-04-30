@@ -23,6 +23,7 @@ server = "python main.py"
 tests = "python -m pytest tests"
 tests-cov = "python -m pytest tests --cov src"
 tests-cov-html = "python -m pytest tests --cov-report html --cov src"
+linter = "flake8 src tests"
 
 [requires]
 python_version = "3.9"
