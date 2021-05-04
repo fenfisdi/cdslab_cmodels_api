@@ -1,7 +1,7 @@
 from typing import Any, Optional
 
+from src.models.routes.simulations import SimulationConfig
 from .metadata import MetadataBaseDoc
-from src.models.routers.simulations import SimulationConfig
 
 
 class SimulationConfigDB(MetadataBaseDoc, SimulationConfig):

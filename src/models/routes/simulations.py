@@ -1,12 +1,11 @@
-from typing import Tuple, Dict, Optional
 from datetime import datetime
+from typing import Tuple, Dict, Optional
 
-from pydantic import BaseModel, Field, validator
 from bson.objectid import ObjectId as BsonObjectId
+from pydantic import BaseModel, Field, validator
 
-from src.models.general_config import GeneralConfig, PydanticObjectId
 from src.models.db.cmodels import CompartmentalModelEnum
-
+from src.models.general_config import GeneralConfig, PydanticObjectId
 
 DatesIntervalType = Tuple[datetime, datetime]
 ParamsLimitsType = Dict[str, Tuple[float, float]]
@@ -17,7 +16,7 @@ StateVarFitType = Optional[str]
 class SimulationConfig(BaseModel):
     user_id: PydanticObjectId
     simulation_name: str = Field(..., max_length=50)
-    """Custom name of simulation given by user"""
+    """Custom name of simulation.py given by user"""
     cmodel_id: PydanticObjectId
     """Compartmental Model iD in mongodb"""
     optimize_parameters: bool

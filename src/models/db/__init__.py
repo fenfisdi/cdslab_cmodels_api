@@ -1,11 +1,5 @@
-from .cmodels import (
-    CompartmentalModelBase,
-    CompartmentalModel,
-    CModel,
-)
+from .model import Model
+from .simulation import Simulation
+from .user import User
 
-__all__ = [
-    'CompartmentalModelBase',
-    'CompartmentalModel',
-    'CModel',
-]
+__all__ = ['Simulation', 'User', 'Model']
