@@ -1,4 +1,4 @@
-from dotenv import dotenv_values
-
-
-settings = dotenv_values('.env')
+fastApiConfig = {
+    'title': 'cdslab models',
+    'version': '1.0.0',
+}

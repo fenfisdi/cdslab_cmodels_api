@@ -22,3 +22,10 @@ class SimulationInterface:
             uuid=uuid
         )
         return Simulation.objects(**filters).first()
+
+    @staticmethod
+    def find_all(user: User):
+        filters = dict(
+            user=user
+        )
+        return Simulation.objects(**filters).all()

@@ -10,7 +10,7 @@ from starlette.status import (
 
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
-from src.models.routes import NewSimulation
+from src.models.routes import NewSimulation, UpdateSimulation
 from src.use_cases.security import SecurityUseCase
 from src.utils.encoder import BsonObject
 from src.utils.messages import ModelMessage, SimulationMessage
@@ -20,8 +20,17 @@ simulation_routes = APIRouter(tags=['Simulation'])
 
 
 @simulation_routes.post('/simulation')
-def create_simulation(simulation: NewSimulation,
-                      user=Depends(SecurityUseCase.validate)):
+def create_simulation(
+        simulation: NewSimulation,
+        user=Depends(SecurityUseCase.validate)
+):
+    """
+    Create custom simulation of user according with definite model.
+
+    \f
+    :param simulation: simulation to create from a model.
+    :param user: user information.
+    """
     simulation_found = SimulationInterface.find_one_by_name(user,
                                                             simulation.name)
     if simulation_found:
@@ -45,15 +54,79 @@ def create_simulation(simulation: NewSimulation,
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
 
-    return UJSONResponse(SimulationMessage.created, HTTP_201_CREATED,
-                         BsonObject.dict(simulation))
+    return UJSONResponse(
+        SimulationMessage.created,
+        HTTP_201_CREATED,
+        BsonObject.dict(simulation)
+    )
 
 
 @simulation_routes.get('/simulation/{uuid}')
-def create_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
+def find_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
+    """
+    Find user simulation with its uuid.
+
+    \f
+    :param uuid: uuid from specific simulation.
+    :param user: user information.
+    """
     simulation = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    return UJSONResponse(SimulationMessage.found, HTTP_200_OK,
-                         BsonObject.dict(simulation))
+    return UJSONResponse(
+        SimulationMessage.found,
+        HTTP_200_OK,
+        BsonObject.dict(simulation)
+    )
+
+
+@simulation_routes.get('/simulation')
+def list_simulation(user=Depends(SecurityUseCase.validate)):
+    """
+    List all user simulation created from a specific model.
+
+    \f
+    :param user: user information.
+    """
+    simulation = SimulationInterface.find_all(user)
+    if not simulation:
+        return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    return UJSONResponse(
+        SimulationMessage.found,
+        HTTP_200_OK,
+        BsonObject.dict(simulation)
+    )
+
+
+@simulation_routes.put('/simulation/{uuid}')
+def update_simulation(
+        uuid: UUID,
+        simulation: UpdateSimulation,
+        user=Depends(SecurityUseCase.validate)
+):
+    """
+    Update user simulation according with the input fields.
+
+    \f
+    :param uuid: model reference to update.
+    :param simulation: simulation input data to update.
+    :param user: user information.
+    """
+    simulation_found = SimulationInterface.find_one_by_uuid(user, uuid)
+    if not simulation_found:
+        return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    simulation_found.update(**simulation.dict())
+    try:
+        simulation_found.save()
+        simulation_found.reload()
+    except Exception as error:
+        return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
+
+    return UJSONResponse(
+        SimulationMessage.updated,
+        HTTP_200_OK,
+        BsonObject.dict(simulation_found)
+    )
