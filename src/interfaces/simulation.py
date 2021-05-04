@@ -19,7 +19,7 @@ class SimulationInterface:
     def find_one_by_uuid(user: User, uuid: Union[str, UUID]) -> Simulation:
         filters = dict(
             user=user,
-            uuid=uuid
+            identifier=uuid
         )
         return Simulation.objects(**filters).first()
 

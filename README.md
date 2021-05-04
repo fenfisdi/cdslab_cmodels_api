@@ -40,7 +40,7 @@ Make sure you have already installed the required python version (see Pipfile)
 6. Run the uvicorn server via the ``~/cdslab_cmodels_api/main.py`` file
 
     ```bash
-    $ python main.py
+    $ python model.py
     ```
 
 7. Enjoy...

@@ -16,7 +16,7 @@ class ModelInterface:
     @staticmethod
     def find_one_by_uuid(uuid: Union[str, UUID]) -> Model:
         filters = dict(
-            uuid=uuid,
+            identifier=uuid,
         )
         return Model.objects(**filters).first()
 
