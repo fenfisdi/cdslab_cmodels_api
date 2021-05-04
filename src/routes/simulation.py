@@ -11,6 +11,7 @@ from starlette.status import (
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
 from src.models.routes import NewSimulation, UpdateSimulation
+from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
 from src.utils.encoder import BsonObject
 from src.utils.messages import ModelMessage, SimulationMessage
@@ -31,8 +32,10 @@ def create_simulation(
     :param simulation: simulation to create from a model.
     :param user: user information.
     """
-    simulation_found = SimulationInterface.find_one_by_name(user,
-                                                            simulation.name)
+    simulation_found = SimulationInterface.find_one_by_name(
+        user,
+        simulation.name
+    )
     if simulation_found:
         return UJSONResponse(SimulationMessage.exist, HTTP_400_BAD_REQUEST)
 
@@ -44,7 +47,8 @@ def create_simulation(
     simulation_data.update(
         {
             'model': model,
-            'user': user
+            'user': user,
+            'identifier': IdentifierUseCase.create_identifier(),
         }
     )
     simulation = Simulation(**simulation_data)

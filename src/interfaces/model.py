@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union
 from uuid import UUID
 
 from src.models.db.model import Model
@@ -21,5 +21,5 @@ class ModelInterface:
         return Model.objects(**filters).first()
 
     @staticmethod
-    def find_all() -> List[Model]:
+    def find_all():
         return Model.objects().all()

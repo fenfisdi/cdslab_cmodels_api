@@ -1,5 +1,3 @@
-from uuid import uuid1
-
 from mongoengine import (
     ReferenceField,
     StringField,
@@ -16,7 +14,7 @@ from .user import User
 
 class Simulation(BaseDocument):
     name = StringField(unique_with='user')
-    uuid = UUIDField(default=uuid1(), unique=True)
+    identifier = UUIDField(unique=True)
     optimize_parameters = BooleanField()
     interval_date = ListField()
     parameters_limits = DictField()
