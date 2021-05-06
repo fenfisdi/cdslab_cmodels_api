@@ -1,1 +1,0 @@
-settings = 'src.config.settings'

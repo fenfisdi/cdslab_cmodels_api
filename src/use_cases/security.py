@@ -46,4 +46,4 @@ class SecurityUseCase:
                 raise HTTPException(401, SecurityMessage.invalid_token)
             return data
         except JWTError as error:
-            raise HTTPException(401, error)
+            raise HTTPException(401, str(error))

@@ -11,7 +11,8 @@ class SimulationInterface:
     def find_one_by_name(user: User, name: str) -> Simulation:
         filters = dict(
             user=user,
-            name=name
+            name=name,
+            is_deleted=False,
         )
         return Simulation.objects(**filters).first()
 
@@ -19,13 +20,15 @@ class SimulationInterface:
     def find_one_by_uuid(user: User, uuid: Union[str, UUID]) -> Simulation:
         filters = dict(
             user=user,
-            identifier=uuid
+            identifier=uuid,
+            is_deleted=False,
         )
         return Simulation.objects(**filters).first()
 
     @staticmethod
     def find_all(user: User):
         filters = dict(
-            user=user
+            user=user,
+            is_deleted=False,
         )
         return Simulation.objects(**filters).all()
