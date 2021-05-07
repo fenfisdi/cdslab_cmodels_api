@@ -3,7 +3,7 @@ from json import JSONEncoder
 from typing import Union
 from uuid import UUID
 
-from bson import ObjectId
+from bson import ObjectId, DBRef
 from mongoengine import Document, QuerySet
 from ujson import loads
 
@@ -16,6 +16,8 @@ class BsonEncoder(JSONEncoder):
             return o.isoformat()
         if isinstance(o, UUID):
             return str(o)
+        if isinstance(o, DBRef):
+            return o.id
         return JSONEncoder.default(self, o)
 
 

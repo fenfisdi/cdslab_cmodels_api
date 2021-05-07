@@ -16,7 +16,8 @@ class SimulationMessage:
     exist: str = 'Simulation exist'
     created: str = 'Simulation created'
     not_found: str = 'Simulation not found'
-    updated: str = 'Simulation Updated'
+    updated: str = 'Simulation updated'
+    deleted: str = 'Simulation deleted'
 
 
 @dataclass

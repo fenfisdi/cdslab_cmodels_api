@@ -134,3 +134,22 @@ def update_simulation(
         HTTP_200_OK,
         BsonObject.dict(simulation_found)
     )
+
+
+@simulation_routes.delete('/simulation/{uuid}')
+def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
+    """
+
+    :param uuid:
+    :param user:
+    """
+    simulation_found = SimulationInterface.find_one_by_uuid(user, uuid)
+    if not simulation_found:
+        return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    simulation_found.is_deleted = True
+    try:
+        simulation_found.save()
+    except Exception as error:
+        return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
+    return UJSONResponse(SimulationMessage.deleted, HTTP_200_OK)
