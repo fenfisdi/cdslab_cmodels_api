@@ -7,7 +7,8 @@ class ModelMessage:
     not_found_all: str = 'Models not found'
     found: str = 'Model found'
     not_found: str = 'Model not found'
-    created: str = 'Model Created'
+    created: str = 'Model created'
+    exist: str = 'Model exist'
 
 
 @dataclass

@@ -22,4 +22,4 @@ class ModelInterface:
 
     @staticmethod
     def find_all():
-        return Model.objects()
+        return Model.objects().all()

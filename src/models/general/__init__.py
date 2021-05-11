@@ -1,3 +1,3 @@
-from .simulation import SimulationStatus
+from .simulation import SimulationStatus, ParameterType
 
-__all__ = ['SimulationStatus']
+__all__ = ['SimulationStatus', 'ParameterType']

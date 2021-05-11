@@ -29,7 +29,7 @@ def create_model(model: NewModel):
     """
     model_found = ModelInterface.find_one_by_name(model.name)
     if model_found:
-        return UJSONResponse('Exist', HTTP_400_BAD_REQUEST)
+        return UJSONResponse(ModelMessage.exist, HTTP_400_BAD_REQUEST)
 
     model = Model(
         **model.dict(),
@@ -72,7 +72,6 @@ def list_model():
     List all models in database
     """
     models = ModelInterface.find_all()
-    print(models)
     if not models:
         return UJSONResponse(ModelMessage.not_found, HTTP_404_NOT_FOUND)
 

@@ -22,7 +22,7 @@ class Simulation(BaseDocument):
     parameters_limits = DictField()
     state_variables_init_vals = DictField()
     state_variable_to_fit = DictField()
-    status = EnumField(SimulationStatus)
+    status = EnumField(SimulationStatus, required=True)
     model = ReferenceField(Model, dbref=True)
     user = ReferenceField(User, dbref=True)
     is_deleted = BooleanField(default=False)
