@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple, List
+from typing import List, Tuple
 from uuid import UUID
 
 from pydantic import BaseModel, Field, root_validator
@@ -37,14 +37,19 @@ class Parameter(BaseModel):
         return values
 
 
+class StateVariable(BaseModel):
+    label: str = Field(...)
+    value: float = Field(...)
+    to_fit: bool = Field(False)
+
+
 class UpdateSimulation(BaseModel):
     name: str = Field(None)
     status: SimulationStatus = Field(SimulationStatus.INCOMPLETE)
     optimize_parameters: bool = Field(None)
     interval_date: Tuple[datetime, datetime] = Field(None)
-    parameters_limits: List[Parameter] = Field(None)
-    state_variables_init_vals: dict = Field(None)
-    state_variable_to_fit: dict = Field(None)
+    parameters_limits: List[Parameter] = Field(None, min_items=0)
+    state_variable_limits: List[StateVariable] = Field(None, min_items=0)
 
 
 class NewSimulation(UpdateSimulation):
