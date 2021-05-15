@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter
 from starlette.status import (
     HTTP_200_OK,
@@ -27,7 +29,7 @@ def create_model(model: NewModel):
     """
     model_found = ModelInterface.find_one_by_name(model.name)
     if model_found:
-        return UJSONResponse('Exist', HTTP_400_BAD_REQUEST)
+        return UJSONResponse(ModelMessage.exist, HTTP_400_BAD_REQUEST)
 
     model = Model(
         **model.dict(),
@@ -46,7 +48,7 @@ def create_model(model: NewModel):
 
 
 @model_routes.get('/model/{uuid}')
-def find_model(uuid: str):
+def find_model(uuid: UUID):
     """
     Find model by uuid
 

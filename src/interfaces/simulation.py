@@ -3,6 +3,7 @@ from uuid import UUID
 
 from src.models.db.simulation import Simulation
 from src.models.db.user import User
+from src.utils.date_time import DateTime
 
 
 class SimulationInterface:
@@ -30,5 +31,15 @@ class SimulationInterface:
         filters = dict(
             user=user,
             is_deleted=False,
+        )
+        return Simulation.objects(**filters).all()
+
+
+class RootSimulationInterface:
+
+    @staticmethod
+    def find_all_expired(days_to_expire: int):
+        filters = dict(
+            updated_at__lt=DateTime.expiration_date(days=days_to_expire)
         )
         return Simulation.objects(**filters).all()

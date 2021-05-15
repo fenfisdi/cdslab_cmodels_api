@@ -6,3 +6,8 @@ class SimulationStatus(Enum):
     DONE: str = 'done'
     RUNNING: str = 'running'
     ERROR: str = 'error'
+
+
+class ParameterType(Enum):
+    FIXED: str = 'fixed'
+    OPTIMIZED: str = 'optimized'
