@@ -9,7 +9,7 @@ from src.db.mongo import MongoEngine
 from src.routes import model_routes, root_routes, simulation_routes
 
 db = MongoEngine().get_connection()
-app = FastAPI(**fastApiConfig)
+app = FastAPI(**fastApiConfig, openapi_url='/models/openapi/openapi.json')
 
 app.add_middleware(
     TrustedHostMiddleware,

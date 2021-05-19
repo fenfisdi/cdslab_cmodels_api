@@ -46,7 +46,7 @@ class StateVariable(BaseModel):
 class UpdateSimulation(BaseModel):
     name: str = Field(None)
     status: SimulationStatus = Field(SimulationStatus.INCOMPLETE)
-    optimize_parameters: bool = Field(None)
+    parameter_type: ParameterType = Field(None)
     interval_date: Tuple[datetime, datetime] = Field(None)
     parameters_limits: List[Parameter] = Field(None, min_items=0)
     state_variable_limits: List[StateVariable] = Field(None, min_items=0)

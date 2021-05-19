@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -11,6 +11,7 @@ from starlette.status import (
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
 from src.models.routes import NewSimulation, UpdateSimulation
+from src.use_cases import ValidateSimulationUseCase
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
 from src.utils.encoder import BsonObject

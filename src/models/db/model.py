@@ -1,11 +1,5 @@
-from mongoengine import (
-    StringField,
-    UUIDField,
-    FloatField,
-    EmbeddedDocument,
-    EmbeddedDocumentListField
-
-)
+from mongoengine import (EmbeddedDocument, EmbeddedDocumentListField,
+                         FloatField, StringField, UUIDField)
 
 from .base import BaseDocument
 
@@ -20,7 +14,7 @@ class Parameter(EmbeddedDocument):
 
 class StateVariable(EmbeddedDocument):
     label = StringField()
-    name = StringField()
+    representation = StringField()
     unit = StringField()
 
 

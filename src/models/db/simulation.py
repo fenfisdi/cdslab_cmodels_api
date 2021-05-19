@@ -18,6 +18,7 @@ from .user import User
 
 class Parameter(EmbeddedDocument):
     label = StringField()
+    representation = StringField()
     type = EnumField(ParameterType)
     value = FloatField()
     min_value = FloatField()
@@ -26,6 +27,7 @@ class Parameter(EmbeddedDocument):
 
 class VariableState(EmbeddedDocument):
     label = StringField()
+    representation = StringField()
     value = FloatField()
     to_fit = BooleanField(default=False)
 
@@ -33,7 +35,7 @@ class VariableState(EmbeddedDocument):
 class Simulation(BaseDocument):
     name = StringField()
     identifier = UUIDField(unique=True, required=True)
-    optimize_parameters = BooleanField()
+    parameter_type = EnumField(ParameterType)
     interval_date = ListField()
     parameters_limits = EmbeddedDocumentListField(Parameter)
     state_variable_limits = EmbeddedDocumentListField(VariableState)

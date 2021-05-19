@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 class Parameter(BaseModel):
     label: str = Field(...)
-    representation: str = Field(...)
     unit: str = Field(...)
     min_value: float = Field(...)
     max_value: float = Field(...)
@@ -13,7 +12,6 @@ class Parameter(BaseModel):
 
 class StateVariable(BaseModel):
     label: str = Field(...)
-    name: str = Field(...)
     unit: str = Field(...)
 
 
