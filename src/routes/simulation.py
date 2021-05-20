@@ -14,6 +14,7 @@ from src.models.routes import NewSimulation, UpdateSimulation
 from src.use_cases import ValidateSimulationUseCase
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
+from src.use_cases.simulation import ExecuteSimulationUseCase
 from src.utils.encoder import BsonObject
 from src.utils.messages import ModelMessage, SimulationMessage
 from src.utils.response import UJSONResponse
@@ -48,6 +49,7 @@ def create_simulation(
     simulation_data.update(
         {
             'model': model,
+            'model_name': model.name,
             'user': user,
             'identifier': IdentifierUseCase.create_identifier(),
         }
@@ -94,14 +96,17 @@ def list_simulation(user=Depends(SecurityUseCase.validate)):
     \f
     :param user: user information.
     """
-    simulation = SimulationInterface.find_all(user)
-    if not simulation:
+    simulations = SimulationInterface.find_all(user)
+    if not simulations:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    for simulation in simulations:
+        simulation.model_name = simulation.model.id
 
     return UJSONResponse(
         SimulationMessage.found,
         HTTP_200_OK,
-        BsonObject.dict(simulation)
+        BsonObject.dict(simulations)
     )
 
 
@@ -123,7 +128,7 @@ def update_simulation(
     if not simulation_found:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    simulation_found.update(**simulation.dict())
+    simulation_found.update(**simulation.dict(exclude_none=True))
     try:
         simulation_found.save()
         simulation_found.reload()

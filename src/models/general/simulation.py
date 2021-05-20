@@ -11,3 +11,8 @@ class SimulationStatus(Enum):
 class ParameterType(Enum):
     FIXED: str = 'fixed'
     OPTIMIZED: str = 'optimized'
+
+
+class DataSourceType(Enum):
+    UPLOAD: str = 'upload'
+    ISN: str = 'ins'
