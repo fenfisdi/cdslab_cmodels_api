@@ -42,7 +42,7 @@ class Simulation(BaseDocument):
     name = StringField(required=True)
     model_name = StringField()
     identifier = UUIDField(binary=False, unique=True, required=True)
-    parameter_type = EnumField(ParameterType)
+    parameter_type = EnumField(ParameterType, null=False)
     interval_date = EmbeddedDocumentField(Interval, null=True)
     parameters_limits = EmbeddedDocumentListField(Parameter)
     state_variable_limits = EmbeddedDocumentListField(VariableState)

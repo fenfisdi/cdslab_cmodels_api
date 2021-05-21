@@ -1,11 +1,13 @@
+import re
 from datetime import datetime
 from typing import List
 from uuid import UUID
 
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, root_validator, validator
 
 from src.models.general import DataSourceType, ParameterType, SimulationStatus
 
+FORMAT_DATE = r'^\d{4}-\d{2}-\d{2}$'
 
 class Parameter(BaseModel):
     label: str = Field(...)
@@ -59,11 +61,17 @@ class Interval(BaseModel):
             raise ValueError('end datetime must be great than start time')
         return values
 
+    @validator('start', 'end', pre=True)
+    def validate_date_format(cls, value):
+        if re.search(FORMAT_DATE, value):
+            return value + 'T00:00'
+        return value
+
 
 class UpdateSimulation(BaseModel):
     name: str = Field(None)
     status: SimulationStatus = Field(SimulationStatus.INCOMPLETE)
-    parameter_type: ParameterType = Field(None)
+    parameter_type: ParameterType = Field(ParameterType.FIXED)
     interval_date: Interval = Field(None)
     parameters_limits: List[Parameter] = Field(None, min_items=0)
     state_variable_limits: List[StateVariable] = Field(None, min_items=0)
