@@ -61,6 +61,14 @@ def create_simulation(
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
 
+    response, is_invalid = FileAPI.create_folder(
+        simulation.identifier,
+        user.email
+    )
+    if is_invalid:
+        simulation.delete()
+        return response
+
     return UJSONResponse(
         SimulationMessage.created,
         HTTP_201_CREATED,

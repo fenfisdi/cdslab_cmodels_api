@@ -1,10 +1,11 @@
 from mongoengine import (
     BooleanField,
+    DateTimeField,
     EmbeddedDocument,
+    EmbeddedDocumentField,
     EmbeddedDocumentListField,
     EnumField,
     FloatField,
-    ListField,
     ReferenceField,
     StringField,
     UUIDField
@@ -32,12 +33,17 @@ class VariableState(EmbeddedDocument):
     to_fit = BooleanField(default=False)
 
 
+class Interval(EmbeddedDocument):
+    start = DateTimeField()
+    end = DateTimeField()
+
+
 class Simulation(BaseDocument):
     name = StringField(required=True)
     model_name = StringField()
-    identifier = UUIDField(unique=True, required=True)
+    identifier = UUIDField(binary=False, unique=True, required=True)
     parameter_type = EnumField(ParameterType)
-    interval_date = ListField()
+    interval_date = EmbeddedDocumentField(Interval, null=True)
     parameters_limits = EmbeddedDocumentListField(Parameter)
     state_variable_limits = EmbeddedDocumentListField(VariableState)
     status = EnumField(SimulationStatus, required=True)

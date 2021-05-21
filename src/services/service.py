@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from requests import Request, Session
 from requests.models import Response
@@ -21,14 +22,16 @@ class APIService:
     def post(
             self,
             endpoint: str,
-            data: dict = None,
+            json: dict = None,
+            data: Any = None,
             parameters: dict = None
     ) -> Response:
         request = Request(
             url=self.__url(endpoint),
             method='POST',
             params=parameters,
-            json=data
+            json=json,
+            data=data,
 
         ).prepare()
         return self.session.send(request)

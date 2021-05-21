@@ -1,5 +1,10 @@
-from mongoengine import (EmbeddedDocument, EmbeddedDocumentListField,
-                         FloatField, StringField, UUIDField)
+from mongoengine import (
+    EmbeddedDocument,
+    EmbeddedDocumentListField,
+    FloatField,
+    StringField,
+    UUIDField
+)
 
 from .base import BaseDocument
 
@@ -20,6 +25,6 @@ class StateVariable(EmbeddedDocument):
 
 class Model(BaseDocument):
     name = StringField(unique=True)
-    identifier = UUIDField(unique=True, required=True)
+    identifier = UUIDField(binary=False, unique=True, required=True)
     state_variables = EmbeddedDocumentListField(StateVariable)
     parameters = EmbeddedDocumentListField(Parameter)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel, Field, root_validator
@@ -49,11 +49,22 @@ class StateVariable(BaseModel):
     to_fit: bool = Field(False)
 
 
+class Interval(BaseModel):
+    start: datetime = Field(...)
+    end: datetime = Field(...)
+
+    @root_validator
+    def validate_dates(cls, values):
+        if values.get('start') > values.get('end'):
+            raise ValueError('end datetime must be great than start time')
+        return values
+
+
 class UpdateSimulation(BaseModel):
     name: str = Field(None)
     status: SimulationStatus = Field(SimulationStatus.INCOMPLETE)
     parameter_type: ParameterType = Field(None)
-    interval_date: Tuple[datetime, datetime] = Field(None)
+    interval_date: Interval = Field(None)
     parameters_limits: List[Parameter] = Field(None, min_items=0)
     state_variable_limits: List[StateVariable] = Field(None, min_items=0)
     data_source: DataSourceType = Field(None)
