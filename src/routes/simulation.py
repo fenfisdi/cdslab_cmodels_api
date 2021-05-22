@@ -11,6 +11,7 @@ from starlette.status import (
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
 from src.models.routes import NewSimulation, UpdateSimulation
+from src.services import FileAPI
 from src.use_cases import ValidateSimulationUseCase
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
@@ -24,8 +25,8 @@ simulation_routes = APIRouter(tags=['Simulation'])
 
 @simulation_routes.post('/simulation')
 def create_simulation(
-        simulation: NewSimulation,
-        user=Depends(SecurityUseCase.validate)
+    simulation: NewSimulation,
+    user=Depends(SecurityUseCase.validate)
 ):
     """
     Create custom simulation of user according with definite model.
@@ -167,3 +168,26 @@ def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
     return UJSONResponse(SimulationMessage.deleted, HTTP_200_OK)
+
+
+@simulation_routes.post('/simulation/{uuid}/execute')
+def execute_simulation(
+    uuid: UUID,
+    background_tasks: BackgroundTasks,
+    user=Depends(SecurityUseCase.validate),
+):
+    simulation = SimulationInterface.find_one_by_uuid(user, uuid)
+    if not simulation:
+        return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    is_valid = ValidateSimulationUseCase.handle(simulation)
+    if not is_valid:
+        return UJSONResponse('invalid simulation', HTTP_400_BAD_REQUEST)
+
+    try:
+        ExecuteSimulationUseCase.handle(simulation)
+    except Exception as error:
+        print(error)
+
+    return UJSONResponse('Buenas', HTTP_200_OK, BsonObject.dict(simulation))
+

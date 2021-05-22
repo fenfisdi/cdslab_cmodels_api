@@ -24,7 +24,8 @@ class APIService:
             endpoint: str,
             json: dict = None,
             data: Any = None,
-            parameters: dict = None
+            parameters: dict = None,
+            files: Any = None
     ) -> Response:
         request = Request(
             url=self.__url(endpoint),
@@ -32,7 +33,7 @@ class APIService:
             params=parameters,
             json=json,
             data=data,
-
+            files=files
         ).prepare()
         return self.session.send(request)
 
