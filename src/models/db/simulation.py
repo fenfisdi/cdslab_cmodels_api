@@ -1,7 +1,7 @@
 from mongoengine import (
     BooleanField,
     DateTimeField,
-    EmbeddedDocument,
+    DictField, EmbeddedDocument,
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
     EnumField,
@@ -47,6 +47,7 @@ class Simulation(BaseDocument):
     parameters_limits = EmbeddedDocumentListField(Parameter)
     state_variable_limits = EmbeddedDocumentListField(VariableState)
     status = EnumField(SimulationStatus, required=True)
+    execution_time = DictField(null=True)
     data_source = EnumField(DataSourceType, null=True)
     model = ReferenceField(Model, dbref=True)
     user = ReferenceField(User, dbref=True)
