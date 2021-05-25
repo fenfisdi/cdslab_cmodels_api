@@ -1,6 +1,6 @@
 import math
 from datetime import datetime, timedelta
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 
 class DateTime:
@@ -46,3 +46,13 @@ class DateTime:
             hours = excess * 24
 
         return dict(days=days, hours=hours, minutes=minutes, seconds=seconds)
+
+    @classmethod
+    def get_delta_days(cls, start: datetime, end: datetime) -> int:
+        delta = end - start
+        return delta.days
+
+    @classmethod
+    def create_date_range(cls, start: datetime, end: datetime) -> List[datetime]:
+        delta = end - start
+        return [start + timedelta(days=i) for i in range(0, delta.days)]

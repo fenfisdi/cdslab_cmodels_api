@@ -12,10 +12,9 @@ from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
 from src.models.routes import NewSimulation, UpdateSimulation
 from src.services import FileAPI
-from src.use_cases import ValidateSimulationUseCase
+from src.use_cases import ExecuteSimulationUseCase
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
-from src.use_cases.simulation import ExecuteSimulationUseCase
 from src.utils.encoder import BsonObject
 from src.utils.messages import ModelMessage, SimulationMessage
 from src.utils.response import UJSONResponse
@@ -180,14 +179,7 @@ def execute_simulation(
     if not simulation:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    is_valid = ValidateSimulationUseCase.handle(simulation)
-    if not is_valid:
-        return UJSONResponse('invalid simulation', HTTP_400_BAD_REQUEST)
-
-    try:
-        ExecuteSimulationUseCase.handle(simulation)
-    except Exception as error:
-        print(error)
+    background_tasks.add_task(ExecuteSimulationUseCase.handle, simulation)
 
     return UJSONResponse('Buenas', HTTP_200_OK, BsonObject.dict(simulation))
 

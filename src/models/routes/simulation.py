@@ -25,8 +25,6 @@ class Parameter(BaseModel):
         if parameter_type == ParameterType.FIXED:
             value = values.get('value')
             assert isinstance(value, float), 'value must be set'
-            values['min_value'] = None
-            values['max_value'] = None
 
         # Verify min_value and max_value if type is optimized
         elif parameter_type == ParameterType.OPTIMIZED:
@@ -36,10 +34,8 @@ class Parameter(BaseModel):
                     isinstance(min_value, float) or isinstance(max_value, float)
             )
             assert is_values_set, 'min_value and max_value must be set'
-            if min_value >= max_value:
+            if min_value > max_value:
                 raise ValueError('max_value must be greater than min_value')
-
-            values['value'] = None
 
         return values
 

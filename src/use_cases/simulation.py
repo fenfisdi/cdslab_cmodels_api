@@ -3,33 +3,15 @@ from io import BytesIO
 from typing import List
 
 import pandas as pd
-from dinjo import ModelSEIR, ModelSEIRV, ModelSIR
 from dinjo.model import Parameter, StateVariable
-from scipy.integrate._ivp.ivp import OdeResult
+from dinjo.optimizer import Optimizer
+from dinjo.predefined.epidemiology import ModelSEIR, ModelSEIRV, ModelSIR
+from pandas import DataFrame
 
 from src.models.db import Simulation
-from src.models.general import ParameterType, SimulationStatus
+from src.models.general import ParameterType
 from src.services import FileAPI
 from src.utils.date_time import DateTime
-
-
-class ValidateSimulationUseCase:
-
-    @classmethod
-    def handle(cls, simulation: Simulation) -> bool:
-        simulation_type = simulation.parameter_type
-
-        if simulation_type == ParameterType.FIXED:
-            # TODO: Validate Fixed Params
-            pass
-        elif simulation_type == ParameterType.OPTIMIZED:
-            # TODO: Validate Optimized Params
-            pass
-
-        simulation.status = SimulationStatus.DONE
-        simulation.save()
-
-        return True
 
 
 class ExecuteSimulationUseCase:
@@ -40,41 +22,112 @@ class ExecuteSimulationUseCase:
             'SEIR': ModelSEIR,
             'SEIRV': ModelSEIRV,
         }
-        results = {}
+        days = DateTime.get_delta_days(simulation.interval_date.start, simulation.interval_date.end)
+        range_days = [0, days-1]
 
         model_template = simulation_models.get(simulation.model.name, None)
         if not model_template:
-            raise Exception("Model simulation didn't exist")
+            raise RuntimeError("Model simulation didn't exist")
 
         parameters = cls.get_parameters(simulation)
         state_variables = cls.get_variable_state(simulation)
 
-        if simulation.parameter_type == ParameterType.FIXED:
-            results = cls.run_fixed_simulation(
-                simulation,
-                parameters,
-                state_variables,
-                model_template
-            )
-        elif simulation.parameter_type == ParameterType.OPTIMIZED:
-            results = cls.run_optimized_simulation(
-                simulation,
-                parameters,
-                state_variables,
-                model_template
+        model = model_template(
+            state_variables=state_variables,
+            parameters=parameters,
+            t_span=range_days,
+            t_steps=days
+        )
+
+        start_time = time.time()
+        results = model.run_model(method='RK45')
+        if simulation.parameter_type == ParameterType.OPTIMIZED:
+
+            variable_to_fit = next((
+                variable for variable in simulation.state_variable_limits
+                if variable.to_fit
+            ), None)
+            assert variable_to_fit, "Undefined"
+
+            variable_model = next((
+                variable for variable in state_variables
+                if variable.name == variable_to_fit.representation
+            ), None)
+
+            file = cls.get_upload_file(simulation)
+            reference_values = file[variable_to_fit.representation].to_numpy()
+
+            # TODO: Verify Args for Optimization object
+            algorithm_kwargs = {
+                'popsize': 20,
+                'disp': True,
+                'tol': 0.0015,
+                'maxiter': 100,
+                'mutation': [0.3, 0.7],
+                'atol': 200
+            }
+
+            optimizer = Optimizer(
+                model=model,
+                reference_state_variable=variable_model,
+                reference_values=reference_values,
+                reference_t_values=results.t
             )
 
-        # cls.save_simulation(simulation, results)
+            optimal = optimizer.optimize(
+                cost_method='root_mean_square',
+                algorithm='differential_evolution',
+                algorithm_kwargs=algorithm_kwargs
+            )
+            optimized_params = optimal.x
+
+            # Update Params
+            for index in range(len(parameters)):
+                parameters[index].initial_value = optimized_params[index]
+
+            # Update Model simulation
+            optimized_mode = model_template(
+                state_variables=state_variables,
+                parameters=parameters,
+                t_span=range_days,
+                t_steps=days
+            )
+
+            results = optimized_mode.run_model(method='RK45')
+
+        end_time = DateTime.format_seconds(time.time() - start_time)
+
+        try:
+            simulation.update(execution_time=end_time)
+        finally:
+            simulation.reload()
+
+        cls.save_simulation(simulation, results)
 
     @classmethod
     def get_parameters(cls, simulation: Simulation) -> List[Parameter]:
-        return [
-            Parameter(
-                name=parameter.label,
-                representation=parameter.label,
-                initial_value=parameter.value,
-            ) for parameter in simulation.parameters_limits
-        ]
+        parameters = []
+
+        for parameter in simulation.parameters_limits:
+            is_optimized = parameter.type == ParameterType.OPTIMIZED
+            value = parameter.value if parameter.value else 0
+            bounds = [value, value]
+
+            if is_optimized:
+                min_value, max_value = parameter.min_value, parameter.max_value
+                bounds = [min_value, max_value]
+                value = min_value
+
+            parameters.append(
+                Parameter(
+                    name=parameter.label,
+                    representation=parameter.label,
+                    initial_value=value,
+                    bounds=bounds
+                )
+            )
+
+        return parameters
 
     @classmethod
     def get_variable_state(cls, simulation: Simulation) -> List[StateVariable]:
@@ -87,58 +140,34 @@ class ExecuteSimulationUseCase:
         ]
 
     @classmethod
-    def run_fixed_simulation(
-        cls,
-        simulation: Simulation,
-        parameters: List[Parameter],
-        variables: List[StateVariable],
-        model_template
-    ):
-        # TODO: Get t_span and t_steps from simulation
-        model = model_template(
-            state_variables=variables,
-            parameters=parameters,
-            t_span=[0, 5000],
-            t_steps=4999
+    def get_upload_file(cls, simulation: Simulation) -> DataFrame:
+        response, is_invalid = FileAPI.list_simulation_files(
+            simulation.identifier
         )
-        start_time = time.time()
-        results: OdeResult = model.run_model(method='RK45')
-        execution_time = DateTime.format_seconds(time.time() - start_time)
-
-        try:
-            simulation.update(execution_time=execution_time)
-        finally:
-            simulation.reload()
-
-        return results
-
-    @classmethod
-    def run_optimized_simulation(
-        cls,
-        simulation: Simulation,
-        parameters: List[Parameter],
-        variables: List[StateVariable],
-        model_template
-    ):
-        response, is_invalid = FileAPI.list_simulation_files(simulation.identifier)
         if is_invalid:
-            return "Retorna Error"
-        files = response.get('data')
+            raise RuntimeError('Cannot find folder file')
 
-        files = [file for file in files if file.get('type') == 'upload']
+        data = response.get('data')
+        upload_files = [file for file in data if file.get('type') == 'upload']
+        file = upload_files[0]
 
         response, is_invalid = FileAPI.find_file(
             simulation.identifier,
-            files[0].get('uuid')
+            file.get('uuid')
         )
+        if is_invalid:
+            raise RuntimeError('Cannot find file')
 
-        # TODO: Verify Null Response
-        df = pd.read_csv(BytesIO(response.content))
+        return pd.read_csv(BytesIO(response.content))
 
     @classmethod
-    def save_simulation(cls, simulation: Simulation, results: OdeResult):
+    def save_simulation(cls, simulation: Simulation, results):
+        interval = DateTime.create_date_range(
+            simulation.interval_date.start,
+            simulation.interval_date.end
+        )
         variable_state_representation = [
-            variable_state.representation for variable_state
+            variable_state.label for variable_state
             in simulation.state_variable_limits
         ]
         current_date = DateTime.current_datetime().isoformat()[:10]
@@ -146,8 +175,9 @@ class ExecuteSimulationUseCase:
 
         df = pd.DataFrame(data=results.get('y')).T
         df.columns = variable_state_representation
+        df.index = interval
 
-        csv = df.to_csv(index=False)
+        csv = df.to_csv(index=True, header=True)
         file_results = [('file', (file_name, csv, 'application/octet-stream'))]
 
         FileAPI.upload_file(
