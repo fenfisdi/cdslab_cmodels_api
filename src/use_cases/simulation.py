@@ -22,8 +22,11 @@ class ExecuteSimulationUseCase:
             'SEIR': ModelSEIR,
             'SEIRV': ModelSEIRV,
         }
-        days = DateTime.get_delta_days(simulation.interval_date.start, simulation.interval_date.end)
-        range_days = [0, days-1]
+        days = DateTime.get_delta_days(
+            simulation.interval_date.start,
+            simulation.interval_date.end
+        )
+        range_days = [0, days - 1]
 
         model_template = simulation_models.get(simulation.model.name, None)
         if not model_template:
