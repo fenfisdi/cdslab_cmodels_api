@@ -1,15 +1,18 @@
+import re
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 from uuid import UUID
 
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, root_validator, validator
 
-from src.models.general import ParameterType, SimulationStatus
+from src.models.general import DataSourceType, ParameterType, SimulationStatus
 
+FORMAT_DATE = r'^\d{4}-\d{2}-\d{2}$'
 
 class Parameter(BaseModel):
     label: str = Field(...)
-    type: ParameterType = Field(...)
+    representation: str = Field(...)
+    type: ParameterType = Field(ParameterType.FIXED)
     value: float = Field(None)
     min_value: float = Field(None)
     max_value: float = Field(None)
@@ -31,7 +34,7 @@ class Parameter(BaseModel):
                     isinstance(min_value, float) or isinstance(max_value, float)
             )
             assert is_values_set, 'min_value and max_value must be set'
-            if min_value >= max_value:
+            if min_value > max_value:
                 raise ValueError('max_value must be greater than min_value')
 
         return values
@@ -39,18 +42,38 @@ class Parameter(BaseModel):
 
 class StateVariable(BaseModel):
     label: str = Field(...)
+    representation: str = Field(...)
     value: float = Field(...)
     to_fit: bool = Field(False)
+
+
+class Interval(BaseModel):
+    start: datetime = Field(...)
+    end: datetime = Field(...)
+
+    @root_validator
+    def validate_dates(cls, values):
+        if values.get('start') > values.get('end'):
+            raise ValueError('end datetime must be great than start time')
+        return values
+
+    @validator('start', 'end', pre=True)
+    def validate_date_format(cls, value):
+        if re.search(FORMAT_DATE, value):
+            return value + 'T00:00'
+        return value
 
 
 class UpdateSimulation(BaseModel):
     name: str = Field(None)
     status: SimulationStatus = Field(SimulationStatus.INCOMPLETE)
-    optimize_parameters: bool = Field(None)
-    interval_date: Tuple[datetime, datetime] = Field(None)
+    parameter_type: ParameterType = Field(ParameterType.FIXED)
+    interval_date: Interval = Field(None)
     parameters_limits: List[Parameter] = Field(None, min_items=0)
     state_variable_limits: List[StateVariable] = Field(None, min_items=0)
+    data_source: DataSourceType = Field(None)
 
 
 class NewSimulation(UpdateSimulation):
+    name: str = Field(...)
     model_id: UUID = Field(...)

@@ -3,7 +3,7 @@ from json import JSONEncoder
 from typing import Union
 from uuid import UUID
 
-from bson import ObjectId, DBRef
+from bson import DBRef, ObjectId
 from mongoengine import Document, QuerySet
 from ujson import loads
 
@@ -41,7 +41,7 @@ class BsonObject:
     @classmethod
     def __filter_keys(cls, data: dict) -> dict:
         invalid_keys = {
-            "_id", "_cls", "inserted_at", "updated_at", "is_deleted"
+            "_id", "_cls", "updated_at", "is_deleted"
         }
 
         for k in data.copy().keys():

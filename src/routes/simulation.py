@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from starlette.status import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -11,6 +11,8 @@ from starlette.status import (
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
 from src.models.routes import NewSimulation, UpdateSimulation
+from src.services import FileAPI
+from src.use_cases import ExecuteSimulationUseCase
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
 from src.utils.encoder import BsonObject
@@ -22,8 +24,8 @@ simulation_routes = APIRouter(tags=['Simulation'])
 
 @simulation_routes.post('/simulation')
 def create_simulation(
-        simulation: NewSimulation,
-        user=Depends(SecurityUseCase.validate)
+    simulation: NewSimulation,
+    user=Depends(SecurityUseCase.validate)
 ):
     """
     Create custom simulation of user according with definite model.
@@ -47,6 +49,7 @@ def create_simulation(
     simulation_data.update(
         {
             'model': model,
+            'model_name': model.name,
             'user': user,
             'identifier': IdentifierUseCase.create_identifier(),
         }
@@ -57,6 +60,14 @@ def create_simulation(
         simulation.save()
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
+
+    response, is_invalid = FileAPI.create_folder(
+        simulation.identifier,
+        user.email
+    )
+    if is_invalid:
+        simulation.delete()
+        return response
 
     return UJSONResponse(
         SimulationMessage.created,
@@ -93,14 +104,17 @@ def list_simulation(user=Depends(SecurityUseCase.validate)):
     \f
     :param user: user information.
     """
-    simulation = SimulationInterface.find_all(user)
-    if not simulation:
+    simulations = SimulationInterface.find_all(user)
+    if not simulations:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    for simulation in simulations:
+        simulation.model_name = simulation.model.id
 
     return UJSONResponse(
         SimulationMessage.found,
         HTTP_200_OK,
-        BsonObject.dict(simulation)
+        BsonObject.dict(simulations)
     )
 
 
@@ -122,7 +136,7 @@ def update_simulation(
     if not simulation_found:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    simulation_found.update(**simulation.dict())
+    simulation_found.update(**simulation.dict(exclude_none=True))
     try:
         simulation_found.save()
         simulation_found.reload()
@@ -153,3 +167,19 @@ def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
     return UJSONResponse(SimulationMessage.deleted, HTTP_200_OK)
+
+
+@simulation_routes.post('/simulation/{uuid}/execute')
+def execute_simulation(
+    uuid: UUID,
+    background_tasks: BackgroundTasks,
+    user=Depends(SecurityUseCase.validate),
+):
+    simulation = SimulationInterface.find_one_by_uuid(user, uuid)
+    if not simulation:
+        return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
+
+    background_tasks.add_task(ExecuteSimulationUseCase.handle, simulation)
+
+    return UJSONResponse('Buenas', HTTP_200_OK, BsonObject.dict(simulation))
+

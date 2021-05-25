@@ -18,7 +18,7 @@ app.add_middleware(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
+    allow_credentials=bool(environ.get('ALLOWED_CREDENTIALS', '1')),
     allow_origins=environ.get("ALLOWED_ORIGINS", "*").split(","),
     allow_methods=environ.get("ALLOWED_METHODS", "*").split(","),
     allow_headers=environ.get("ALLOWED_HEADERS", "*").split(",")

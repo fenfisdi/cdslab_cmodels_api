@@ -1,10 +1,9 @@
 from mongoengine import (
-    StringField,
-    UUIDField,
-    FloatField,
     EmbeddedDocument,
-    EmbeddedDocumentListField
-
+    EmbeddedDocumentListField,
+    FloatField,
+    StringField,
+    UUIDField
 )
 
 from .base import BaseDocument
@@ -20,12 +19,12 @@ class Parameter(EmbeddedDocument):
 
 class StateVariable(EmbeddedDocument):
     label = StringField()
-    name = StringField()
+    representation = StringField()
     unit = StringField()
 
 
 class Model(BaseDocument):
     name = StringField(unique=True)
-    identifier = UUIDField(unique=True, required=True)
+    identifier = UUIDField(binary=False, unique=True, required=True)
     state_variables = EmbeddedDocumentListField(StateVariable)
     parameters = EmbeddedDocumentListField(Parameter)

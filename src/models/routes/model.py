@@ -13,7 +13,7 @@ class Parameter(BaseModel):
 
 class StateVariable(BaseModel):
     label: str = Field(...)
-    name: str = Field(...)
+    representation: str = Field(...)
     unit: str = Field(...)
 
 
