@@ -1,4 +1,5 @@
 from mongoengine import (
+    BooleanField,
     EmbeddedDocument,
     EmbeddedDocumentListField,
     FloatField,
@@ -21,6 +22,7 @@ class StateVariable(EmbeddedDocument):
     label = StringField()
     representation = StringField()
     unit = StringField()
+    can_fit = BooleanField(default=True)
 
 
 class Model(BaseDocument):

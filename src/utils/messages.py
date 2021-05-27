@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelMessage:
+    updated: str = 'Model updated'
     found_all: str = 'Models founded'
     not_found_all: str = 'Models not found'
     found: str = 'Model found'

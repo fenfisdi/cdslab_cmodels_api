@@ -10,7 +10,7 @@ from starlette.status import (
 
 from src.interfaces import ModelInterface
 from src.models.db import Model
-from src.models.routes.model import NewModel
+from src.models.routes.model import NewModel, UpdateModel
 from src.use_cases.identifier import IdentifierUseCase
 from src.utils.encoder import BsonObject
 from src.utils.messages import ModelMessage
@@ -63,6 +63,24 @@ def find_model(uuid: UUID):
         ModelMessage.found,
         HTTP_200_OK,
         BsonObject.dict(model)
+    )
+
+
+@model_routes.put('/model/{uuid}')
+def update_model(uuid: UUID, model: UpdateModel):
+    model_found = ModelInterface.find_one_by_uuid(uuid)
+    if not model_found:
+        return UJSONResponse(ModelMessage.not_found, HTTP_404_NOT_FOUND)
+
+    try:
+        model_found.update(**model.dict())
+    except Exception as error:
+        return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
+
+    return UJSONResponse(
+        ModelMessage.updated,
+        HTTP_200_OK,
+        BsonObject.dict(model_found)
     )
 
 
