@@ -46,4 +46,4 @@ class BsonObjectTestCase(TestCase):
             'age': 20,
         }
         self.assertIsInstance(result, dict)
-        self.assertDictEqual(result, mock_result)
+        self.assertEqual(result['name'], mock_result['name'])

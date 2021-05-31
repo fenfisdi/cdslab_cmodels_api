@@ -26,13 +26,13 @@ simulation_routes = APIRouter(tags=['Simulation'])
 def create_simulation(
     simulation: NewSimulation,
     user=Depends(SecurityUseCase.validate)
-):
+    ):
     """
     Create custom simulation of user according with definite model.
 
-    \f
-    :param simulation: simulation to create from a model.
-    :param user: user information.
+    Parameters:
+        simulation (NewSimulation): simulation to create from a model.
+        user (User): user information.
     """
     simulation_found = SimulationInterface.find_one_by_name(
         user,
@@ -81,9 +81,9 @@ def find_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     """
     Find user simulation with its uuid.
 
-    \f
-    :param uuid: uuid from specific simulation.
-    :param user: user information.
+    Parameters:
+        uuid (UUID): uuid from specific simulation.
+        user (User): user information.
     """
     simulation = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation:
@@ -101,8 +101,8 @@ def list_simulation(user=Depends(SecurityUseCase.validate)):
     """
     List all user simulation created from a specific model.
 
-    \f
-    :param user: user information.
+    Parameters:
+        user (User): user information.
     """
     simulations = SimulationInterface.find_all(user)
     if not simulations:
@@ -123,14 +123,14 @@ def update_simulation(
         uuid: UUID,
         simulation: UpdateSimulation,
         user=Depends(SecurityUseCase.validate)
-):
+    ):
     """
     Update user simulation according with the input fields.
 
-    \f
-    :param uuid: model reference to update.
-    :param simulation: simulation input data to update.
-    :param user: user information.
+    Parameters:
+        uuid (UUID): model reference to update.
+        simulation (UpdateSimulation): simulation input data to update.
+        user (User): user information.
     """
     simulation_found = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation_found:
@@ -153,9 +153,10 @@ def update_simulation(
 @simulation_routes.delete('/simulation/{uuid}')
 def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     """
-
-    :param uuid:
-    :param user:
+        Delete a simulation
+    Parameters:
+        uuid (UUID): model reference to delete
+        user (User): user information.
     """
     simulation_found = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation_found:
@@ -174,7 +175,15 @@ def execute_simulation(
     uuid: UUID,
     background_tasks: BackgroundTasks,
     user=Depends(SecurityUseCase.validate),
-):
+    ):
+    '''
+        execute a simulation
+    
+    Parameters:
+        uuid (UUID): model reference to execute
+        user (User): user information.
+
+    '''
     simulation = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)

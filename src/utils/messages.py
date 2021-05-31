@@ -3,6 +3,9 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelMessage:
+    '''
+        Messages used in endpoint responses for models 
+    '''
     updated: str = 'Model updated'
     found_all: str = 'Models founded'
     not_found_all: str = 'Models not found'
@@ -14,6 +17,9 @@ class ModelMessage:
 
 @dataclass
 class SimulationMessage:
+    '''
+        Messages used in endpoint responses for Simulations
+    '''
     found: str = 'Simulation Found'
     exist: str = 'Simulation exist'
     created: str = 'Simulation created'
@@ -24,4 +30,7 @@ class SimulationMessage:
 
 @dataclass
 class SecurityMessage:
+    '''
+        Messages used in endpoint responses for security
+    '''
     invalid_token: str = 'Invalid token'

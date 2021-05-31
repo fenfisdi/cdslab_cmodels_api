@@ -11,6 +11,9 @@ from ..models.routes import TypeFile
 
 
 class FileAPI:
+    '''
+        Handles API requests to FILE API
+    '''
     api_url = environ.get('FILE_API')
     request = APIService(API(api_url))
 
@@ -31,7 +34,7 @@ class FileAPI:
         simulation_uuid: UUID,
         files: Any = None,
         file_type: TypeFile = TypeFile.DOWNLOAD
-    ) -> Tuple[Union[dict, UJSONResponse], bool]:
+      ) -> Tuple[Union[dict, UJSONResponse], bool]:
         """
 
         :param simulation_uuid:
@@ -70,7 +73,7 @@ class FileAPI:
         cls,
         simulation_uuid: UUID,
         file_uuid: UUID
-    ) -> (Union[Response, UJSONResponse], bool):
+      ) -> Tuple[Union[Response, UJSONResponse], bool]:
 
         response = cls.request.get(
             f'/root/simulation/{str(simulation_uuid)}/file/{str(file_uuid)}'

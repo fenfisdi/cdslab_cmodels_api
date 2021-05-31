@@ -1,4 +1,7 @@
 class Singleton(type):
+    '''
+        Creates a instance type singleton
+    '''
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
