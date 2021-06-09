@@ -23,11 +23,7 @@ model_routes = APIRouter(tags=['Model'])
 def create_model(model: NewModel):
     """
     Create model to storage in database for simulations.
-
-    Parameter:
-        model (NewModel): model information to save.
-    Return:
-        UJSONResponse: API Response with info request
+    :param model: model information to save.
     """
     model_found = ModelInterface.find_one_by_name(model.name)
     if model_found:
@@ -53,11 +49,7 @@ def create_model(model: NewModel):
 def find_model(uuid: UUID):
     """
     Find model by uuid
-
-    Parameters:
-        uuid (UUID): model identifier to find.
-    Returns:
-        UJSONResponse: API Response with info request
+    :param uuid: model identifier to find.
     """
     model = ModelInterface.find_one_by_uuid(uuid)
     if not model:
@@ -73,12 +65,9 @@ def find_model(uuid: UUID):
 @model_routes.put('/model/{uuid}')
 def update_model(uuid: UUID, model: UpdateModel):
     '''
-        Update a model
-    Parameters:
-        uuid (UUID): Model UUID
-        model (UpdateModel): model to update
-    Return:
-        UJSONResponse: API Response with info request
+    Update a model
+    :param uuid: Model UUID
+    :param model (UpdateModel): model to update
     '''
     model_found = ModelInterface.find_one_by_uuid(uuid)
     if not model_found:
@@ -99,9 +88,7 @@ def update_model(uuid: UUID, model: UpdateModel):
 @model_routes.get('/model')
 def list_model():
     """
-        List all models in database
-    Return:
-        UJSONResponse: API Response with info request
+    List all models in database
     """
     models = ModelInterface.find_all()
     if not models:

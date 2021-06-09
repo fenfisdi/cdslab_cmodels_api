@@ -18,6 +18,13 @@ class GraphUseCase:
         is_optimized: bool,
         variable_state: Optional[StateVariable] = None
     ) -> List[Figure]:
+        """
+        Create a new times series figure
+
+        :param df: data for figure 
+        :is_optimized: controls start range
+        :variable_state: initial states of variables
+        """
 
         figures = []
         scatter_options = dict(

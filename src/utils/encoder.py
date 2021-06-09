@@ -9,9 +9,9 @@ from ujson import loads
 
 
 class BsonEncoder(JSONEncoder):
-    '''
+    """
         Class that allows conversion to JSON
-    '''
+    """
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)
@@ -25,18 +25,15 @@ class BsonEncoder(JSONEncoder):
 
 
 class BsonObject:
-    '''
+    """
         Transform a mongodb document into a dictionary
-    '''
+    """
     @classmethod
     def dict(cls, document: Union[Document, Document]):
-        '''
-            Creates a python dictionary based in a mongodb document
-        Parameters:
-            document (Document): Mongodb document to transform
-        Return:
-            dict: Dictionary with keys and values from mongodb document
-        '''
+        """
+        Creates a python dictionary based in a mongodb document
+        :param document: Mongodb document to transform
+        """
         if isinstance(document, QuerySet):
             document = [value.to_mongo() for value in document]
             raw = BsonEncoder().encode(document)
@@ -52,13 +49,10 @@ class BsonObject:
 
     @classmethod
     def __filter_keys(cls, data: dict) -> dict:
-        '''
-            Remove sensitive data from the dictionary
-        Parameters:
-            data (dict): Dictionary with data to filter
-        Return:
-            dict: Dictionary without sensitive keys
-        '''
+        """
+        Remove sensitive data from the dictionary
+        :param data: Dictionary with data to filter
+        """
         invalid_keys = {
             "_id", "_cls", "updated_at", "is_deleted"
         }

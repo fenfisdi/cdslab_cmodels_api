@@ -12,13 +12,10 @@ root_routes = APIRouter(prefix="/root", tags=['Root'], include_in_schema=False)
 
 @root_routes.get('/simulation/expired')
 def list_simulation_expired(to_expire: int = Query(-30, lt=0)):
-    '''
-        Check expired simulations
-    Parameter:
-        to_expire (int): expiration days
-    Return:
-        UJSONResponse: API response with info request 
-    '''
+    """
+    Check expired simulations
+    :param to_expire: expiration days
+    """
     data = RootSimulationInterface.find_all_expired(to_expire)
 
     return UJSONResponse(

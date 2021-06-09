@@ -16,6 +16,10 @@ class SecurityUseCase:
 
     @classmethod
     def validate(cls, token: str = Depends(oauth2_scheme)) -> User:
+        """
+        Valid a token
+        :param token: security token
+        """
         token_data = cls._validate_token(token)
         email = token_data.get('email')
 
@@ -36,6 +40,10 @@ class SecurityUseCase:
 
     @classmethod
     def _validate_token(cls, token: str) -> Optional[dict]:
+        """
+        decode a token
+        :param token:security token
+        """
         try:
             data = jwt.decode(
                 token,

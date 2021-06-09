@@ -19,6 +19,10 @@ from src.utils.date_time import DateTime
 class ExecuteSimulationUseCase:
     @classmethod
     def handle(cls, simulation: Simulation):
+        """
+        Handles the execution of the simulation
+        :param simulation: simulation information
+        """
         simulation_models = {
             'SIR': ModelSIR,
             'SEIR': ModelSEIR,
@@ -142,6 +146,10 @@ class ExecuteSimulationUseCase:
 
     @classmethod
     def get_parameters(cls, simulation: Simulation) -> List[Parameter]:
+        """
+        Get the simulation parameters
+        :param simulation: simulation information
+        """
         parameters = []
 
         for parameter in simulation.parameters_limits:
@@ -167,6 +175,10 @@ class ExecuteSimulationUseCase:
 
     @classmethod
     def get_variable_state(cls, simulation: Simulation) -> List[StateVariable]:
+        """
+        Get the simulation variable states
+        :param simulation: simulation information
+        """
         return [
             StateVariable(
                 name=variable.label,
@@ -177,6 +189,10 @@ class ExecuteSimulationUseCase:
 
     @classmethod
     def get_upload_file(cls, simulation: Simulation) -> DataFrame:
+        """
+        Get upload file
+        :param simulation: simulation information
+        """
         response, is_invalid = FileAPI.list_simulation_files(
             simulation.identifier
         )
@@ -198,6 +214,12 @@ class ExecuteSimulationUseCase:
 
     @classmethod
     def save_simulation(cls, results: DataFrame, simulation: Simulation):
+        """
+        Save the results to a csv file
+
+        :param results: similation results
+        :param simulation: simulation information
+        """
         file_name = 'results.csv'
         csv = results.to_csv(index=False, header=True)
         file_results = [('file', (file_name, csv, 'application/octet-stream'))]
@@ -209,7 +231,11 @@ class ExecuteSimulationUseCase:
 
     @classmethod
     def save_figures(cls, figures: List[Figure], simulation: Simulation):
-
+        """
+        Save the graphs
+        :param figures: graphics to save
+        :param simulation: simulation information
+        """
         for figure in figures:
             file_name = f"{figure.layout.title.text}.html"
             buffer_html = StringIO()
@@ -237,6 +263,12 @@ class ExecuteSimulationUseCase:
         simulation: Simulation,
         state_variable: List[StateVariable]
     ) -> DataFrame:
+        """
+        Create a dataframe with the results
+        :param results: simulation results
+        :param simulation: simulation information
+        :state_variable: state variables
+        """
         interval = DateTime.create_date_range(
             simulation.interval_date.start,
             simulation.interval_date.end
@@ -254,6 +286,11 @@ class ExecuteSimulationUseCase:
         file: DataFrame,
         variable: StateVariable
     ) -> DataFrame:
+        """
+        
+        :param file:
+        :param variable:
+        """
         file.columns = ['date', variable.representation]
         file['date'] = pd.to_datetime(file['date'])
         return file

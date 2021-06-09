@@ -14,13 +14,13 @@ class UJSONResponse(FastAPIResponse):
         status_code: int,
         data: Optional[Union[dict, list]] = None
     ):
-        '''
-            Constructor of class
-        Parameters:
-            message (str): Response of process.
-            status_code (int): HTTP code.
-            data (dict, list): Data of process.
-        '''
+        """
+        Constructor of class
+        
+        :param message (str): Response of process.
+        :param status_code (int): HTTP code.
+        :param data (dict, list): Data of process.
+        """
         response = dict(
             message=message,
             status_code=status_code,
@@ -30,13 +30,10 @@ class UJSONResponse(FastAPIResponse):
 
 
 def to_response(response: Response) -> UJSONResponse:
-    '''
-        Convert an Http response to a standard API response
-    Parameters:
-        response (Response): http response.
-    Returns:
-        UJSONResponse: standard response.
-    '''
+    """
+    Convert an Http response to a standard API response
+    :param response (Response): http response.
+    """
     data = response.text
     message = 'API Error'
     if response.headers.get('content-type') == 'application/json':

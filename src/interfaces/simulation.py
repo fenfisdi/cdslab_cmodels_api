@@ -7,19 +7,17 @@ from src.utils.date_time import DateTime
 
 
 class SimulationInterface:
-    '''
+    """
         Class to query the user db
-    '''
+    """
     @staticmethod
     def find_one_by_name(user: User, name: str) -> Simulation:
-        '''
-            find a simulation that matches the name and user
-        Parameters:
-            name (str): Simulation name.
-            user (User): Simulation user.
-        Return:
-            Simulation: The simulation that match
-        '''
+        """
+        find a simulation that matches the name and user
+    
+        :param name: Simulation name.
+        :param user: Simulation user.
+        """
         filters = dict(
             user=user,
             name=name,
@@ -29,14 +27,12 @@ class SimulationInterface:
 
     @staticmethod
     def find_one_by_uuid(user: User, uuid: Union[str, UUID]) -> Simulation:
-        '''
-            find a simulation that matches the uuid and user
-        Parameters:
-            user (User): Simulation user
-            uuid (Union[str, UUID]): simulation uuid
-        Return:
-            Simulation: The simulation that match
-        '''
+        """
+        find a simulation that matches the uuid and user
+
+        :param user: Simulation user
+        :param uuid: simulation uuid
+        """
         filters = dict(
             user=user,
             identifier=uuid,
@@ -46,13 +42,11 @@ class SimulationInterface:
 
     @staticmethod
     def find_all(user: User):
-        '''
-            find simulations matching user
-        Parameters:
-            user (User): Simulation user
-        Return:
-            List[Simulation]: Lists of simulation that match
-        '''
+        """
+        find simulations matching user
+        
+        :param user: Simulation user
+        """
         filters = dict(
             user=user,
             is_deleted=False,

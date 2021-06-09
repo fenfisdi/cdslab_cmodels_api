@@ -11,14 +11,20 @@ from ..models.routes import TypeFile
 
 
 class FileAPI:
-    '''
+    """
         Handles API requests to FILE API
-    '''
+    """
     api_url = environ.get('FILE_API')
     request = APIService(API(api_url))
 
     @classmethod
     def create_folder(cls, simulation_uuid: UUID, email: str):
+        """
+        create a folder
+        
+        :param simulation_uuid: id simulation
+        :pram email: user email
+        """
         data = {
             'email': email,
             'simulation_uuid': str(simulation_uuid),
@@ -36,10 +42,10 @@ class FileAPI:
         file_type: TypeFile = TypeFile.DOWNLOAD
       ) -> Tuple[Union[dict, UJSONResponse], bool]:
         """
-
-        :param simulation_uuid:
-        :param files:
-        :param file_type:
+        Upload a file
+        :param simulation_uuid: simulation id
+        :param files: files
+        :param file_type: type of action
         """
 
         parameters = {
@@ -57,8 +63,8 @@ class FileAPI:
     @classmethod
     def list_simulation_files(cls, simulation_uuid: UUID):
         """
-
-        :param simulation_uuid:
+        Show simulation files
+        :param simulation_uuid: simulation id
         """
 
         response = cls.request.get(
@@ -74,6 +80,11 @@ class FileAPI:
         simulation_uuid: UUID,
         file_uuid: UUID
       ) -> Tuple[Union[Response, UJSONResponse], bool]:
+        """
+        Show simulation files
+        :param simulation_uuid: simulation id
+        :param file_uuid: file id
+        """
 
         response = cls.request.get(
             f'/root/simulation/{str(simulation_uuid)}/file/{str(file_uuid)}'
