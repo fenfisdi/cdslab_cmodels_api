@@ -20,6 +20,7 @@ class SimulationMessage:
     not_found: str = 'Simulation not found'
     updated: str = 'Simulation updated'
     deleted: str = 'Simulation deleted'
+    executing: str = 'Simulation executing'
 
 
 @dataclass
