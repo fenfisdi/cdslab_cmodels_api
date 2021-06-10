@@ -108,9 +108,6 @@ def list_simulation(user=Depends(SecurityUseCase.validate)):
     if not simulations:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    for simulation in simulations:
-        simulation.model_name = simulation.model.id
-
     return UJSONResponse(
         SimulationMessage.found,
         HTTP_200_OK,
@@ -154,6 +151,7 @@ def update_simulation(
 def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     """
 
+    \f
     :param uuid:
     :param user:
     """
@@ -175,11 +173,26 @@ def execute_simulation(
     background_tasks: BackgroundTasks,
     user=Depends(SecurityUseCase.validate),
 ):
+    """
+
+    \f
+    :param uuid:
+    :param background_tasks:
+    :param user:
+    """
     simulation = SimulationInterface.find_one_by_uuid(user, uuid)
     if not simulation:
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
-    background_tasks.add_task(ExecuteSimulationUseCase.handle, simulation)
+    background_tasks.add_task(ExecuteSimulationUseCase.handle, simulation, user)
 
-    return UJSONResponse('Buenas', HTTP_200_OK, BsonObject.dict(simulation))
+    data = {
+        'identifier': str(simulation.identifier),
+    }
+
+    return UJSONResponse(
+        SimulationMessage.executing,
+        HTTP_200_OK,
+        data
+    )
 
