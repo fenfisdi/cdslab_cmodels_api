@@ -10,6 +10,7 @@ from starlette.status import (
 
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
+from src.models.general import SimulationStatus
 from src.models.routes import NewSimulation, UpdateSimulation
 from src.services import FileAPI
 from src.use_cases import ExecuteSimulationUseCase
@@ -185,6 +186,11 @@ def execute_simulation(
         return UJSONResponse(SimulationMessage.not_found, HTTP_404_NOT_FOUND)
 
     background_tasks.add_task(ExecuteSimulationUseCase.handle, simulation, user)
+
+    try:
+        simulation.update(status=SimulationStatus.RUNNING)
+    finally:
+        simulation.reload()
 
     data = {
         'identifier': str(simulation.identifier),
