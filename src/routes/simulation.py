@@ -26,9 +26,11 @@ simulation_routes = APIRouter(tags=['Simulation'])
 def create_simulation(
     simulation: NewSimulation,
     user=Depends(SecurityUseCase.validate)
-    ):
+):
     """
     Create custom simulation of user according with definite model.
+
+    \f
     :param simulation: simulation to create from a model.
     :param user: user information.
     """
@@ -78,6 +80,8 @@ def create_simulation(
 def find_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     """
     Find user simulation with its uuid.
+
+    \f
     :param uuid: uuid from specific simulation.
     :param user: user information.
     """
@@ -96,6 +100,8 @@ def find_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
 def list_simulation(user=Depends(SecurityUseCase.validate)):
     """
     List all user simulation created from a specific model.
+
+    \f
     :param user: user information.
     """
     simulations = SimulationInterface.find_all(user)
@@ -117,10 +123,11 @@ def update_simulation(
         uuid: UUID,
         simulation: UpdateSimulation,
         user=Depends(SecurityUseCase.validate)
-    ):
+):
     """
     Update user simulation according with the input fields.
 
+    \f
     :param uuid: model reference to update.
     :param simulation: simulation input data to update.
     :param user: user information.
@@ -148,6 +155,7 @@ def delete_simulation(uuid: UUID, user=Depends(SecurityUseCase.validate)):
     """
     Delete a simulation
    
+    \f
     :param uuid: model reference to delete
     :param user: user information.
     """
@@ -172,6 +180,7 @@ def execute_simulation(
     """
     execute a simulation
     
+    \f
     :param uuid: model reference to execute
     :param user: user information.
 

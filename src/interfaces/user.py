@@ -10,6 +10,7 @@ class UserInterface:
     def find_one(email: str) -> User:
         """
         Search the database for the user corresponding to the email
+        
         :param email: user email.
         """
 

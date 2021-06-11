@@ -24,6 +24,7 @@ class ModelInterface:
     def find_one_by_uuid(uuid: Union[str, UUID]) -> Model:
         """
         find a model that matches the uuid
+        
         :param uuid: Model uuid.
         """
         filters = dict(

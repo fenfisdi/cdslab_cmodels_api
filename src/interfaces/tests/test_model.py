@@ -1,14 +1,15 @@
-from unittest import TestCase
 from uuid import uuid1
+from unittest import TestCase
+
 from mongoengine import connect, disconnect
 
 from src.models.db.model import (
     Model,
     StateVariable,
     Parameter
-    )
-from src.utils.encoder import BsonObject
+)
 from src.interfaces.model import ModelInterface
+from src.utils.encoder import BsonObject
 
 
 class ModelInterfaceTestCase(TestCase):

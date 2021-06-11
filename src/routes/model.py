@@ -23,6 +23,8 @@ model_routes = APIRouter(tags=['Model'])
 def create_model(model: NewModel):
     """
     Create model to storage in database for simulations.
+
+    \f
     :param model: model information to save.
     """
     model_found = ModelInterface.find_one_by_name(model.name)
@@ -49,6 +51,8 @@ def create_model(model: NewModel):
 def find_model(uuid: UUID):
     """
     Find model by uuid
+
+    \f
     :param uuid: model identifier to find.
     """
     model = ModelInterface.find_one_by_uuid(uuid)
@@ -66,6 +70,8 @@ def find_model(uuid: UUID):
 def update_model(uuid: UUID, model: UpdateModel):
     '''
     Update a model
+
+    \f
     :param uuid: Model UUID
     :param model (UpdateModel): model to update
     '''

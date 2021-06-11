@@ -1,13 +1,15 @@
-from unittest import TestCase
-from mongoengine import connect, disconnect
 from uuid import uuid1
+from unittest import TestCase
 from datetime import datetime
+
+from mongoengine import connect, disconnect
 
 from src.models.db.user import User
 from src.models.db.model import (
     Model, 
     StateVariable,
-    Parameter as ModelParam)
+    Parameter as ModelParam
+)
 from src.models.db.simulation import (
     Simulation,
     Interval,
@@ -17,8 +19,7 @@ from src.models.db.simulation import (
 from src.models.general import (
     DataSourceType, 
     ParameterType,
-    SimulationStatus,
-    simulation
+    SimulationStatus
 )
 from src.utils.encoder import BsonObject
 from src.interfaces.simulation import SimulationInterface

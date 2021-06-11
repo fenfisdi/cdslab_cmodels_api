@@ -30,3 +30,4 @@ class UserInterfaceTestCase(TestCase):
         user = UserInterface.find_one("")
 
         self.assertIsNone(user)
+        
