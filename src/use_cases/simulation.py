@@ -1,15 +1,18 @@
 import time
 from io import BytesIO, StringIO
-from typing import List
+from typing import List, Tuple
 
+import numpy as np
 import pandas as pd
 from dinjo.model import Parameter, StateVariable
 from dinjo.optimizer import Optimizer
 from dinjo.predefined.epidemiology import ModelSEIR, ModelSEIRV, ModelSIR
+from numpy import ndarray
 from pandas import DataFrame
 from plotly.graph_objs import Figure
 
 from src.models.db import Simulation, User
+from src.models.db.simulation import VariableState
 from src.models.general import ParameterType, SimulationStatus
 from src.services import FileAPI
 from src.utils.date_time import DateTime
@@ -20,31 +23,48 @@ from .graph import GraphUseCase
 class ExecuteSimulationUseCase:
     @classmethod
     def handle(cls, simulation: Simulation, user: User):
-        try:
-            simulation.update(status=SimulationStatus.RUNNING)
-        finally:
-            simulation.reload()
 
-        simulation_models = {
-            'SIR': ModelSIR,
-            'SEIR': ModelSEIR,
-            'SEIRV': ModelSEIRV,
-        }
-        fig_results = []
         variable_model = None
-        days = DateTime.get_delta_days(
-            simulation.interval_date.start,
-            simulation.interval_date.end
+        reference_values = None
+        simulation_models = dict(
+            SIR=ModelSIR,
+            SEIR=ModelSEIR,
+            SEIRV=ModelSEIRV
         )
-        range_days = [0, days - 1]
-
         try:
             model_template = simulation_models.get(simulation.model.name, None)
-            if not model_template:
-                raise RuntimeError("Model simulation didn't exist")
 
             parameters = cls.get_parameters(simulation)
             state_variables = cls.get_variable_state(simulation)
+
+            is_optimized = simulation.parameter_type == ParameterType.OPTIMIZED
+
+            if is_optimized:
+                # Verify variable to fit in model
+                variable_to_fit, variable_model = cls.get_variable_to_fit(
+                    simulation,
+                    state_variables
+                )
+
+                # Find upload file to optimize variable
+                file = cls.get_upload_file(simulation)
+                df_file_reference = cls.format_reference_dataframe(
+                    file,
+                    variable_model
+                )
+                reference_values = df_file_reference[
+                    variable_to_fit.representation
+                ].to_numpy()
+
+                days = len(reference_values)
+
+            else:
+                days = DateTime.get_delta_days(
+                    simulation.interval_date.start,
+                    simulation.interval_date.end
+                )
+
+            range_days = [0, days - 1]
 
             model = model_template(
                 state_variables=state_variables,
@@ -58,36 +78,14 @@ class ExecuteSimulationUseCase:
             if not results.success:
                 raise RuntimeError('Can not resolve simulation')
 
-            df_results = cls.result_to_dataframe(
-                results,
-                simulation,
-                state_variables
-            )
-            is_optimized = simulation.parameter_type == ParameterType.OPTIMIZED
+            if not is_optimized:
+                df_results = cls.result_to_dataframe(
+                    results,
+                    simulation,
+                    state_variables
+                )
 
             if is_optimized:
-
-                variable_to_fit = next((
-                    variable for variable in simulation.state_variable_limits
-                    if variable.to_fit
-                ), None)
-                assert variable_to_fit, "Undefined"
-
-                variable_model = next((
-                    variable for variable in state_variables
-                    if variable.representation == variable_to_fit.representation
-                ), None)
-                assert variable_model, "Undefined"
-
-                file = cls.get_upload_file(simulation)
-                df_reference = cls.format_reference_dataframe(
-                    file,
-                    variable_model
-                )
-                reference_values = df_reference[
-                    variable_to_fit.representation
-                ].to_numpy()
-
                 algorithm_kwargs = {
                     'popsize': 20,
                     'disp': True,
@@ -109,34 +107,36 @@ class ExecuteSimulationUseCase:
                     algorithm='differential_evolution',
                     algorithm_kwargs=algorithm_kwargs
                 )
-                optimized_params = optimal.x
 
-                # Update Params
+                optimized_params = optimal.x
                 init_params = parameters.copy()
                 for index in range(len(parameters)):
                     init_params[index].initial_value = optimized_params[index]
 
-                # Update Model simulation
-                optimized_mode = model_template(
-                    state_variables=state_variables,
-                    parameters=init_params,
-                    t_span=range_days,
-                    t_steps=days
+                days = DateTime.get_delta_days(
+                    simulation.interval_date.start,
+                    simulation.interval_date.end
                 )
 
-                results = optimized_mode.run_model(method='RK45')
+                optimized_model = model_template(
+                    state_variables=state_variables,
+                    parameters=init_params,
+                    t_span=[0, days - 1],
+                    t_steps=days
+                )
+                results = optimized_model.run_model(method='RK45')
 
                 df_results = cls.result_to_dataframe(
                     results,
                     simulation,
                     state_variables
                 )
+
                 df_results.insert(
                     1,
-                    f"{variable_model.name}_reference",
-                    reference_values
+                    f"{variable_model.representation}_reference",
+                    cls.format_reference_variable(reference_values, days)
                 )
-
         except Exception as error:
             simulation.update(status=SimulationStatus.ERROR)
             simulation.reload()
@@ -145,12 +145,10 @@ class ExecuteSimulationUseCase:
 
         end_time = DateTime.format_seconds(time.time() - start_time)
 
-        fig_results.extend(
-            GraphUseCase.create_general_figure(
-                df_results,
-                is_optimized,
-                variable_model
-            )
+        fig_results = GraphUseCase.create_general_figure(
+            df_results,
+            is_optimized,
+            variable_model
         )
 
         try:
@@ -199,6 +197,30 @@ class ExecuteSimulationUseCase:
                 initial_value=variable.value,
             ) for variable in simulation.state_variable_limits
         ]
+
+    @classmethod
+    def get_variable_to_fit(
+        cls,
+        simulation: Simulation,
+        state_variables: List[StateVariable]
+    ) -> Tuple[VariableState, StateVariable]:
+        variable_to_fit = next(
+            (
+                variable for variable in simulation.state_variable_limits
+                if variable.to_fit
+            ), None
+        )
+        assert variable_to_fit, "Variable to Fit Undefined"
+
+        variable_model = next(
+            (
+                variable for variable in state_variables
+                if variable.representation == variable_to_fit.representation
+            ), None
+        )
+        assert variable_model, "Variable Model Undefined"
+
+        return variable_to_fit, variable_model
 
     @classmethod
     def get_upload_file(cls, simulation: Simulation) -> DataFrame:
@@ -281,3 +303,17 @@ class ExecuteSimulationUseCase:
         file.columns = ['date', variable.representation]
         file['date'] = pd.to_datetime(file['date'])
         return file
+
+    @classmethod
+    def format_reference_variable(
+        cls,
+        reference_variable: ndarray,
+        longitude: int
+    ):
+        reference_len = len(reference_variable)
+        if longitude <= reference_len:
+            return reference_variable[0:longitude]
+        else:
+            new_len = reference_len - longitude
+            ext = np.full([new_len], 0)
+            return np.concatenate((reference_len, ext))
