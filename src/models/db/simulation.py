@@ -22,6 +22,7 @@ class Parameter(EmbeddedDocument):
     representation = StringField()
     type = EnumField(ParameterType)
     value = FloatField(null=True)
+    unit = StringField(null=False)
     min_value = FloatField(null=True)
     max_value = FloatField(null=True)
 
@@ -30,6 +31,7 @@ class VariableState(EmbeddedDocument):
     label = StringField()
     representation = StringField()
     value = FloatField()
+    unit = StringField(null=False)
     to_fit = BooleanField(default=False)
 
 

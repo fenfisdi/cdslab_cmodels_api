@@ -6,7 +6,12 @@ import numpy as np
 import pandas as pd
 from dinjo.model import Parameter, StateVariable
 from dinjo.optimizer import Optimizer
-from dinjo.predefined.epidemiology import ModelSEIR, ModelSEIRV, ModelSIR
+from dinjo.predefined.epidemiology import (
+    ModelSEIR,
+    ModelSEIRV,
+    ModelSIR,
+    ModelSimpleSEIRV
+)
 from numpy import ndarray
 from pandas import DataFrame
 from plotly.graph_objs import Figure
@@ -26,13 +31,15 @@ class ExecuteSimulationUseCase:
 
         variable_model = None
         reference_values = None
-        simulation_models = dict(
-            SIR=ModelSIR,
-            SEIR=ModelSEIR,
-            SEIRV=ModelSEIRV
-        )
+        simulation_models = {
+            "SIR": ModelSIR,
+            "SEIR": ModelSEIR,
+            "SEIRV": ModelSEIRV,
+            "Modified SEIRV": ModelSimpleSEIRV,
+        }
         try:
             model_template = simulation_models.get(simulation.model.name, None)
+            assert model_template, RuntimeError('Model hasn\'t been defined')
 
             parameters = cls.get_parameters(simulation)
             state_variables = cls.get_variable_state(simulation)
