@@ -13,6 +13,7 @@ from .base import BaseDocument
 class Parameter(EmbeddedDocument):
     label = StringField()
     representation = StringField()
+    description = StringField()
     unit = StringField()
     min_value = FloatField()
     max_value = FloatField()
@@ -21,6 +22,7 @@ class Parameter(EmbeddedDocument):
 class StateVariable(EmbeddedDocument):
     label = StringField()
     representation = StringField()
+    description = StringField()
     unit = StringField()
     can_fit = BooleanField(default=True)
 

@@ -9,11 +9,13 @@ from src.models.general import DataSourceType, ParameterType, SimulationStatus
 
 FORMAT_DATE = r'^\d{4}-\d{2}-\d{2}$'
 
+
 class Parameter(BaseModel):
     label: str = Field(...)
     representation: str = Field(...)
     type: ParameterType = Field(ParameterType.FIXED)
     value: float = Field(None)
+    unit: str = Field("")
     min_value: float = Field(None)
     max_value: float = Field(None)
 
@@ -44,6 +46,7 @@ class StateVariable(BaseModel):
     label: str = Field(...)
     representation: str = Field(...)
     value: float = Field(...)
+    unit: str = Field("")
     to_fit: bool = Field(False)
 
 
