@@ -10,10 +10,10 @@ from starlette.status import (
 
 from src.interfaces import ModelInterface, SimulationInterface
 from src.models.db import Simulation
-from src.models.general import SimulationStatus
+from src.models.general import ParameterType, SimulationStatus
 from src.models.routes import NewSimulation, UpdateSimulation
 from src.services import FileAPI
-from src.use_cases import ExecuteSimulationUseCase
+from src.use_cases import ExecuteSimulationUseCase, VerifySimulationFile
 from src.use_cases.identifier import IdentifierUseCase
 from src.use_cases.security import SecurityUseCase
 from src.utils.encoder import BsonObject
@@ -140,6 +140,9 @@ def update_simulation(
         simulation_found.reload()
     except Exception as error:
         return UJSONResponse(str(error), HTTP_400_BAD_REQUEST)
+
+    if simulation.parameter_type == ParameterType.OPTIMIZED:
+        VerifySimulationFile.handle(simulation_found)
 
     return UJSONResponse(
         SimulationMessage.updated,

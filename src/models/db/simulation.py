@@ -37,7 +37,7 @@ class VariableState(EmbeddedDocument):
 
 class Interval(EmbeddedDocument):
     start = DateTimeField()
-    end = DateTimeField()
+    end = DateTimeField(null=True)
 
 
 class Simulation(BaseDocument):

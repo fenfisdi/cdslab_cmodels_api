@@ -1,3 +1,3 @@
-from .simulation import ExecuteSimulationUseCase
+from .simulation import ExecuteSimulationUseCase, VerifySimulationFile
 
-__all__ = ['ExecuteSimulationUseCase']
+__all__ = ['ExecuteSimulationUseCase', 'VerifySimulationFile']
