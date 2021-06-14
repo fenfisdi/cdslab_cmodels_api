@@ -26,3 +26,9 @@ class SimulationMessage:
 @dataclass
 class SecurityMessage:
     invalid_token: str = 'Invalid token'
+
+
+@dataclass
+class INSMessage:
+    found: str = 'Variables found'
+    not_found: str = 'Variables not found'
