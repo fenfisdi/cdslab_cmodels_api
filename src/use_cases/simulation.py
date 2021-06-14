@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from io import BytesIO, StringIO
 from typing import List, Tuple
 
@@ -17,12 +18,47 @@ from pandas import DataFrame
 from plotly.graph_objs import Figure
 
 from src.models.db import Simulation, User
-from src.models.db.simulation import VariableState
+from src.models.db.simulation import Interval, VariableState
 from src.models.general import ParameterType, SimulationStatus
 from src.services import FileAPI
 from src.utils.date_time import DateTime
 from .email import SendEmailUseCase
 from .graph import GraphUseCase
+from ..models.routes import TypeFile
+
+
+class VerifySimulationFile:
+
+    @classmethod
+    def handle(cls, simulation: Simulation):
+
+        response, is_invalid = FileAPI.list_simulation_files(
+            simulation_uuid=simulation.identifier
+        )
+        if is_invalid:
+            return None
+
+        data = response.get('data')
+        if not data:
+            return None
+
+        response, is_invalid = FileAPI.find_file(
+            simulation.identifier,
+            data[0].get('uuid')
+        )
+        if is_invalid:
+            return None
+
+        try:
+            df_upload = pd.read_csv(BytesIO(response.content))
+            result = df_upload.T.values
+            date, variable = datetime.fromisoformat(result[0][0]), result[1][0]
+
+            simulation.update(
+                interval_date=Interval(start=date, end=None)
+            )
+        finally:
+            simulation.reload()
 
 
 class ExecuteSimulationUseCase:
@@ -238,7 +274,10 @@ class ExecuteSimulationUseCase:
             raise RuntimeError('Cannot find folder file')
 
         data = response.get('data')
-        upload_files = [file for file in data if file.get('type') == 'upload']
+        upload_files = [
+            file for file in data
+            if file.get('type') == TypeFile.UPLOADED.value
+        ]
         file = upload_files[0]
 
         response, is_invalid = FileAPI.find_file(

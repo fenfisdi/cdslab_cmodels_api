@@ -30,7 +30,7 @@ class FileAPI:
         cls,
         simulation_uuid: UUID,
         files: Any = None,
-        file_type: TypeFile = TypeFile.DOWNLOAD
+        file_type: TypeFile = TypeFile.COMPUTED
     ) -> Tuple[Union[dict, UJSONResponse], bool]:
         """
 
