@@ -30,7 +30,7 @@ class Parameter(EmbeddedDocument):
 class VariableState(EmbeddedDocument):
     label = StringField()
     representation = StringField()
-    value = FloatField()
+    value = FloatField(null=True)
     unit = StringField(null=False)
     to_fit = BooleanField(default=False)
 

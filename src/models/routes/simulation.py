@@ -45,7 +45,7 @@ class Parameter(BaseModel):
 class StateVariable(BaseModel):
     label: str = Field(...)
     representation: str = Field(...)
-    value: float = Field(...)
+    value: float = Field(None)
     unit: str = Field("")
     to_fit: bool = Field(False)
 
