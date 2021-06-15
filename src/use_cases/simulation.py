@@ -52,11 +52,22 @@ class VerifySimulationFile:
         try:
             df_upload = pd.read_csv(BytesIO(response.content))
             result = df_upload.T.values
-            date, variable = datetime.fromisoformat(result[0][0]), result[1][0]
+            date, var_value = datetime.fromisoformat(
+                result[0][0]
+            ), result[1][0]
 
             simulation.update(
                 interval_date=Interval(start=date, end=None)
             )
+
+            if simulation.state_variable_limits:
+                variables = []
+                for variable in simulation.state_variable_limits:
+                    var_name = str(df_upload.columns[1]).upper()
+                    if var_name == variable.representation:
+                        variable.value = 1
+                    variables.append(variable)
+                simulation.update(state_variable_limits=variables)
         finally:
             simulation.reload()
 
