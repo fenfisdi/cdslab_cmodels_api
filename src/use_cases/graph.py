@@ -46,8 +46,7 @@ class GraphUseCase:
             y = df[df.columns[i]].to_list()
             scatter = Scatter(x=x, y=y, name=df.columns[i], **scatter_options)
 
-            in_column = df.columns[i] == variable_state.representation
-            if variable_state and in_column:
+            if variable_state and df.columns[i] == variable_state.representation:
                 y_reference = df[df.columns[1]]
                 scatter_reference = Scatter(
                     x=x,
