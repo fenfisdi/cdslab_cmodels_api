@@ -56,8 +56,14 @@ class VerifySimulationFile:
                 result[0][0]
             ), result[1][0]
 
+            simulation_date = simulation.interval_date
+            if simulation_date:
+                finish_date = simulation_date.end
+            else:
+                finish_date = None
+
             simulation.update(
-                interval_date=Interval(start=date, end=None)
+                interval_date=Interval(start=date, end=finish_date)
             )
 
             if simulation.state_variable_limits:
@@ -371,6 +377,6 @@ class ExecuteSimulationUseCase:
         if longitude <= reference_len:
             return reference_variable[0:longitude]
         else:
-            new_len = reference_len - longitude
+            new_len = longitude - reference_len
             ext = np.full([new_len], 0)
-            return np.concatenate((reference_len, ext))
+            return np.concatenate((reference_variable, ext))
