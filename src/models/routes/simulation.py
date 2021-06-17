@@ -4,6 +4,7 @@ from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel, Field, root_validator, validator
+from pytz import UTC
 
 from src.models.general import DataSourceType, ParameterType, SimulationStatus
 
@@ -51,12 +52,17 @@ class StateVariable(BaseModel):
 
 
 class Interval(BaseModel):
-    start: datetime = Field(...)
+    start: datetime = Field(None)
     end: datetime = Field(...)
 
     @root_validator
     def validate_dates(cls, values):
-        if values.get('start') > values.get('end'):
+        start = values.get('start')
+        end = values.get('end')
+        start = start.replace(tzinfo=UTC)
+        end = end.replace(tzinfo=UTC)
+
+        if start >= end:
             raise ValueError('end datetime must be great than start time')
         return values
 
