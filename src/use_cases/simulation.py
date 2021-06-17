@@ -44,7 +44,7 @@ class VerifySimulationFile:
 
         response, is_invalid = FileAPI.find_file(
             simulation.identifier,
-            data[0].get('uuid')
+            data.pop().get('uuid')
         )
         if is_invalid:
             return None
