@@ -13,7 +13,7 @@ setup(
     description='CDSLab cmodels API',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/fenfisdi/cdslab_auth',
+    url='https://github.com/fenfisdi/cdslab_cmodels_api',
     author='Juan Esteban Aristizabal',
     author_email='jeaz.git@gmail.com',
     license='GNU General Public License v3 (GPLv3)',
@@ -34,11 +34,11 @@ setup(
         'Topic :: Scientific/Engineering :: Medical Science Apps.',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries'
-        ],
+    ],
     test_suite='pytest',
     packages=find_packages(exclude='__pycache__'),
     keywords=[],
     python_requires='>=3.8',
     install_requires=[],
     zip_safe=False
-    )
+)
